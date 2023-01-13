@@ -12,7 +12,6 @@ export default async function UpdateMargins (
     console.log(new Date())
 
     let query = skus ? {SKU: {$in: skus.replace(/'/g, "").split(",")}} : {};
-
     const items = await find<sbt.Item>("New-Items", query)
 
     if(!items) return merge
@@ -21,8 +20,11 @@ export default async function UpdateMargins (
 
     for (let item of items) {
         let mergeItem = merge.get(item.SKU)
-        if(!mergeItem) continue
-        merge.set(item.SKU, {...item,...mergeItem})
+        if(!mergeItem) {
+            merge.set(item.SKU, item)
+        } else {
+            merge.set(item.SKU, {...item, ...mergeItem})
+        }
     }
 
     let fees = new Fees()
@@ -34,6 +36,10 @@ export default async function UpdateMargins (
     let postage = new Postage()
     await postage.initialize()
 
-    for(const [_, item] of merge) await ProcessMargins(item, fees, packaging, postage);
+    for(const [_, item] of merge) {
+        console.log(item)
+        await ProcessMargins(item, fees, packaging, postage);
+    }
+
     return merge
 }
