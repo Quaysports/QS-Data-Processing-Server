@@ -209,7 +209,11 @@ declare namespace sbt {
             image4: Image,
             image5: Image,
             image6: Image,
-            image7: Image
+            image7: Image,
+            image8: Image,
+            image9: Image,
+            image10: Image,
+            image11: Image
         }
         stockHistory: number[][]
         linkedSKUS: string[]

@@ -15,6 +15,8 @@ http.createServer(app).listen(4000, async () => {
     console.log(`HTTP server listening`)
     await startSever()
     console.log(`Server started`)
+    // Heartbeat
+    await HeartBeat.init()
 });
 
 const startSever = async () => {
@@ -50,7 +52,10 @@ const startSever = async () => {
         res.send(await ping())
     });
 
-    // Heartbeat
-    await HeartBeat.init()
+    const itemRoutes = require('./routes/items.js')
+    app.use('/Items/', itemRoutes)
+
+    const marginRoutes = require('./routes/margin.js')
+    app.use('/Margin/', marginRoutes)
 
 }

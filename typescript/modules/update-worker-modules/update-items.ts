@@ -128,6 +128,10 @@ function itemTemplate(): sbt.Item {
             image5: {filename: "", id: "", link: ""},
             image6: {filename: "", id: "", link: ""},
             image7: {filename: "", id: "", link: ""},
+            image8: {filename: "", id: "", link: ""},
+            image9: {filename: "", id: "", link: ""},
+            image10: {filename: "", id: "", link: ""},
+            image11: {filename: "", id: "", link: ""},
             main: {filename: "", id: "", link: ""}
         },
         lastUpdate: "",
