@@ -25,7 +25,7 @@ export async function beat(){
     console.log("Heartbeat:", new Date().toLocaleString('en-GB'))
 
     const status = (await findOne<mostRecentUpdate>('Server', {id: 'Heartbeat'}, {}))
-    console.log("Last update:", status?.recentUpdates)
+
     if(!status) return
     await Auth();
     await checkForItemUpdates(status)
@@ -47,7 +47,6 @@ const checkForItemUpdates = async (current: mostRecentUpdate) => {
 
     const UpdateItems = linnQuery.Results;
     if (!UpdateItems || UpdateItems.length <= 0) return;
-    console.log("Last Linn Update:", UpdateItems[0])
 
     await logDataAndUpdateDBStatus(UpdateItems, "Item")
     await dbCleanUp()
