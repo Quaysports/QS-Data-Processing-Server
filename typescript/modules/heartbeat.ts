@@ -37,7 +37,7 @@ export async function beat(){
 const checkForItemUpdates = async (current: mostRecentUpdate) => {
 
     const linnQuery = await getLinnQuery<SQLQueryResult>(
-        `SELECT ItemNumber AS SKU,
+        `SELECT ItemNumber AS 'SKU',
                 ModifiedDate AS 'date'
          FROM StockItem
          WHERE bLogicalDelete = 0
@@ -59,7 +59,7 @@ const checkForItemUpdates = async (current: mostRecentUpdate) => {
 
 const checkForStockUpdates = async (current: mostRecentUpdate) => {
     const linnQuery = await getLinnQuery<SQLQueryResult>(
-        `SELECT si.ItemNumber AS 'SKU', sl.LastUpdateDate AS 'DATE'
+        `SELECT si.ItemNumber AS 'SKU', sl.LastUpdateDate AS 'date'
          FROM [StockItem] si
              INNER JOIN [StockLevel] sl on si.pkStockItemId = sl.fkStockItemId
          WHERE bLogicalDelete = 0
