@@ -7,8 +7,8 @@ import http from 'http'
 
 
 const app = express();
-app.use("/images", express.static(path.join(__dirname, "../images")));
-app.use("/brand-label-images", express.static(path.join(__dirname, "../brand-label-images")));
+app.use("/images", express.static(path.join(__dirname, "./images")));
+app.use("/brand-label-images", express.static(path.join(__dirname, "./brand-label-images")));
 app.disable('x-powered-by')
 
 http.createServer(app).listen(4000, async () => {
@@ -26,7 +26,6 @@ const startSever = async () => {
 
     const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000"];
     app.use((req, res, next) => {
-        console.log(req.headers.host)
         allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
     })
 
