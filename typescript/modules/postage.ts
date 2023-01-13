@@ -1,7 +1,7 @@
-import {deleteOne, findOne, setData} from "./mongo-interface";
+import {find, setData} from "./mongo-interface";
 import {getPostalServices} from "./linnworks/api";
 
-export interface PostalData {
+export interface PostageData {
     _id?: { $oid: string };
     POSTALFORMAT?: string;
     POSTID: string;
@@ -12,19 +12,24 @@ export interface PostalData {
     LASTUPDATE?: string;
 }
 
+export interface PostageClass {
 
-
-export const get = async (id:string) => {
-    return await findOne<PostalData>("Postage", {POSTID: id})
+    initialize: () => Promise<void>;
+    find: (id: string) => PostageData | undefined;
 }
 
-export const update = async (data:PostalData) => {
+export const get = async () => {
+    return await find<PostageData>("Postage")
+}
+
+export const update = async (data:PostageData) => {
     if (data._id !== undefined) delete data._id;
     await setData("Postage", {POSTALFORMAT: data.POSTALFORMAT}, data)
     return data
 }
 
 export const updateAll = async () => {
+    console.log('Postage', 'Updating from Linnworks')
     const linnPostalServices = await getPostalServices()
     for (let service of linnPostalServices) {
         if (service.hasMappedShippingService) {
@@ -38,9 +43,25 @@ export const updateAll = async () => {
     }
     return
 }
-
-export const remove = async (data:PostalData) => {
+/*
+export const remove = async (data:PostageData) => {
     if (data._id !== undefined) delete data._id
     await deleteOne("Postage", {POSTALFORMAT: data.POSTALFORMAT})
     return data
+}
+*/
+
+export class Postage implements PostageClass {
+
+    async initialize() {
+        await updateAll()
+        await get().then((data) => this.postage = data)
+    }
+
+    private postage: PostageData[] | undefined;
+
+    find(id: string) {
+        if (!this.postage) return undefined
+        return this.postage.find((p) => p.POSTID === id)
+    }
 }

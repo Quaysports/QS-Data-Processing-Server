@@ -1,6 +1,8 @@
 import {Fees} from "../fees";
 import {find} from "../mongo-interface";
 import ProcessMargins from "../margin-calculation";
+import {Packaging} from "../packaging";
+import {Postage} from "../postage";
 
 export default async function UpdateMargins (
     merge = (new Map<string, sbt.Item>()), skus?:string
@@ -26,6 +28,12 @@ export default async function UpdateMargins (
     let fees = new Fees()
     await fees.initialize()
 
-    for(const [_, item] of merge) await ProcessMargins(item, fees);
+    let packaging = new Packaging()
+    await packaging.initialize()
+
+    let postage = new Postage()
+    await postage.initialize()
+
+    for(const [_, item] of merge) await ProcessMargins(item, fees, packaging, postage);
     return merge
 }

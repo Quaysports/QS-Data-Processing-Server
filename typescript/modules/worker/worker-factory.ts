@@ -3,9 +3,9 @@ import EventEmitter from 'events'
 
 let events = new Map<string, EventEmitter>()
 
-export function postToWorker(worker: string, data: sbt.WorkerData) {
+export function postToWorker(worker: string, data: sbt.WorkerData):Promise<any> {
 
-    return new Promise((resolve) => {
+    return new Promise((resolve,reject) => {
 
         let emitter = new EventEmitter()
         emitter.once('data', async(result) => {
@@ -18,6 +18,7 @@ export function postToWorker(worker: string, data: sbt.WorkerData) {
             console.log("Worker error: ", err)
             if (events.has(data.id)) events.delete(data.id)
             await updateWorker.terminate()
+            reject(err)
         })
         emitter.once('close', async () => {
             console.log("Worker close event!")

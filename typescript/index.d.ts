@@ -151,6 +151,7 @@ declare namespace sbt {
             prime:boolean
             marginCalculator:{
                 //map from MCOVERRIDES
+                hide:boolean
                 amazonOverride:boolean
                 ebayOverride:boolean
                 magentoOverride:boolean

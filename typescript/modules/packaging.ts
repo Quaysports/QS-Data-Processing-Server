@@ -1,4 +1,4 @@
-import {findOne, setData} from "./mongo-interface";
+import {find, setData} from "./mongo-interface";
 import {getLinnQuery} from "./linnworks/api";
 
 export interface PackagingData {
@@ -9,8 +9,14 @@ export interface PackagingData {
     TYPE: string;
     PRICE?: number;
 }
-export const get = async (id: string) => {
-    return await findOne<PackagingData>("Packaging", {ID: id})
+
+export interface PackagingClass {
+
+    initialize: () => Promise<void>;
+    find: (id: string) => PackagingData | undefined;
+}
+export const get = async () => {
+    return await find<PackagingData>("Packaging", {})
 }
 
 export const update = async (data: PackagingData) => {
@@ -19,7 +25,7 @@ export const update = async (data: PackagingData) => {
 }
 
 export const updateAll = async () => {
-    console.log('Packaging: Updating all')
+    console.log('Packaging', 'Updating from Linnworks')
     const linnData = await linnGet()
     for (let v of linnData) await setData("Packaging", {ID: v.ID}, v)
     return {status: 'done'}
@@ -56,4 +62,18 @@ export const linnGet = async () => {
         }
     }
     return process
+}
+export class Packaging implements PackagingClass {
+
+    async initialize() {
+        await updateAll()
+        await get().then((data) => this.packaging = data)
+    }
+
+    private packaging: PackagingData[] | undefined;
+
+    find(id: string) {
+        if (!this.packaging) return undefined
+        return this.packaging.find((p) => p.ID === id)
+    }
 }

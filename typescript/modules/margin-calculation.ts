@@ -1,8 +1,8 @@
-import * as Postage from "./postage";
-import * as Packaging from "./packaging";
 import {FeesClass} from "./fees";
+import {PackagingClass} from "./packaging";
+import {PostageClass} from "./postage";
 
-export default async function ProcessMargins (item: sbt.Item, fees: FeesClass) {
+export default async function ProcessMargins (item: sbt.Item, Fees: FeesClass, Packaging:PackagingClass, Postage:PostageClass) {
     item.marginData = {
         amazonFees: 0,
         amazonPrimePostageCost: 0,
@@ -27,22 +27,22 @@ export default async function ProcessMargins (item: sbt.Item, fees: FeesClass) {
         totalProfitLastYear: 0
     }
 
-    await getPostageAndPackaging(item);
-    await getAmazonListingCosts(item, fees);
-    await getMagentoListingCosts(item, fees);
-    await getEbayListingCosts(item, fees);
-    await getShopListingCosts(item, fees);
+    await getPostageAndPackaging(item, Packaging, Postage)
+    await getAmazonListingCosts(item, Fees);
+    await getMagentoListingCosts(item, Fees);
+    await getEbayListingCosts(item, Fees);
+    await getShopListingCosts(item, Fees);
     await getLastYearChannelProfits(item);
     return
 }
 
-const getPostageAndPackaging = async (item: sbt.Item) => {
+const getPostageAndPackaging = async (item: sbt.Item, Packaging:PackagingClass, Postage:PostageClass) => {
 
-    let postage = await Postage.get(item.postage.id)
+    let postage = await Postage.find(item.postage.id)
     if (!postage) postage = {POSTCOSTEXVAT: 0, POSTID: item.postage.id}
     item.marginData.postageCost = modifyPostVal(postage.POSTCOSTEXVAT, item.postage.modifier)
 
-    let amazonPrimePostage = await Postage.get("30823674-1131-4087-a2d0-c50fe871548e")
+    let amazonPrimePostage = await Postage.find("30823674-1131-4087-a2d0-c50fe871548e")
     if (!amazonPrimePostage) amazonPrimePostage = {POSTCOSTEXVAT: 0, POSTID: "30823674-1131-4087-a2d0-c50fe871548e"}
     item.marginData.amazonPrimePostageCost = modifyPostVal(amazonPrimePostage!.POSTCOSTEXVAT, item.postage.modifier)
 
@@ -58,7 +58,7 @@ const getPostageAndPackaging = async (item: sbt.Item) => {
         }
     }
 
-    let packaging = await Packaging.get(item.packaging.group)
+    let packaging = await Packaging.find(item.packaging.group)
     item.marginData.packagingCost = packaging?.PRICE ? packaging.PRICE : 0.1
 }
 

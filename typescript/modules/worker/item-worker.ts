@@ -6,6 +6,7 @@ import UpdateMargins from "../update-worker-modules/update-margins";
 import UpdateChannelData from "../update-worker-modules/update-channel-data";
 import GetLinnworksChannelPrices from "../update-worker-modules/get-linnworks-channel-prices";
 import {bulkUpdateItems} from "../mongo-interface";
+import UpdateLinnworksChannelPrices from "../update-worker-modules/update-linnworks-channel-prices";
 
 const {parentPort} = require("worker_threads")
 
@@ -16,6 +17,14 @@ parentPort.on("message", async (req: sbt.WorkerReq) => {
             return parentPort.postMessage(
                 createChannelMessage(req, await runUpdateStockTotals(req))
             );
+        case "channelPrices":
+            return parentPort.postMessage(
+                createChannelMessage(req, await runChannelPrices(req))
+            )
+        case "updateLinnChannelPrices":
+            return parentPort.postMessage(
+                createChannelMessage(req, await runUpdateLinnChannelPrices(req))
+            )
         case "updateAll":
             return parentPort.postMessage(
                 createChannelMessage(req, await runUpdateAll(req))
@@ -34,6 +43,17 @@ const runUpdateStockTotals = async (req: sbt.WorkerReq) => {
     if (req.data.save) await bulkUpdateItems(merge)
     return merge;
 }
+
+const runChannelPrices = async (req: sbt.WorkerReq) => {
+    const merge = await UpdateMargins(await GetLinnworksChannelPrices(undefined, req.data.skus), req.data.skus)
+    await bulkUpdateItems(merge)
+    return merge.size > 1 ? merge : Array.from(merge.values())[0];
+}
+
+const runUpdateLinnChannelPrices = async (req: sbt.WorkerReq) => {
+    return await UpdateLinnworksChannelPrices(undefined, req.data.items)
+}
+
 const runUpdateAll = async (req: sbt.WorkerReq) => {
     let start = new Date()
 
