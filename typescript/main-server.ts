@@ -1,6 +1,5 @@
 import {ping} from "./modules/mongo-interface";
 
-require('dotenv').config()
 import * as HeartBeat from "./modules/heartbeat";
 import path from 'path'
 import express from 'express'

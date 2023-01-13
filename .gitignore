@@ -5,3 +5,5 @@
 /modules/
 /typescript/Heartbeat.http
 /.idea/
+/config.json
+/typescript/config.json
