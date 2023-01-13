@@ -111,7 +111,7 @@ function itemTemplate(): sbt.Item {
                 photos: false,
                 zenTackle: false
             },
-            marginCalculator: {amazonOverride: false, ebayOverride: false, magentoOverride: false},
+            marginCalculator: {hide:false, amazonOverride: false, ebayOverride: false, magentoOverride: false},
             notApplicable: {amazon: false, amazonStore: false, ebay: false, magento: false, zenTackle: false},
             prime: false,
             ready: {amazon: false, amazonStore: false, ebay: false, magento: false, zenTackle: false},
