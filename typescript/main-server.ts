@@ -1,5 +1,5 @@
 import {ping} from "./modules/mongo-interface";
-
+import config = require('./config.json')
 import * as HeartBeat from "./modules/heartbeat";
 import path from 'path'
 import express from 'express'
@@ -40,7 +40,8 @@ const startSever = async () => {
     });
 
     app.use((req, res, next) => {
-        req.headers.token?.toString() !== process.env.SERVERSECRET ? res.sendStatus(403) : next()
+        let token = req.headers.token?.toString() as "" | undefined
+        token && config.tokens[token] ? res.sendStatus(403) : next()
     })
 
     console.log("Mongo Ping: ", await ping())
