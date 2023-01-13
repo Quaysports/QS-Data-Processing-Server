@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es2021",
+    "types": ["node"],
+    "sourceMap": false,
+    "rootDir": "./typescript",
+    "outDir": ".",
+    "strict": true,
+    "resolveJsonModule": true
+  },
+  "exclude": [
+      "tests",
+      "node_modules",
+      ".idea",
+      "brand-label-images",
+      "images",
+      "login",
+      "website-images"
+  ],
+  "typedocOptions": {
+    "entryPoints": ["./typescript"],
+    "entryPointStrategy": "expand",
+    "out": "docs"
+  }
+}
