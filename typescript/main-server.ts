@@ -41,7 +41,7 @@ const startSever = async () => {
 
     app.use((req, res, next) => {
         let token = req.headers.token?.toString() as "" | undefined
-        token && config.tokens[token] ? res.sendStatus(403) : next()
+        token && config.tokens[token] ? next() : res.sendStatus(403)
     })
 
     console.log("Mongo Ping: ", await ping())
