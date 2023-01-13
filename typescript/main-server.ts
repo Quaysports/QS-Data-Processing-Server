@@ -24,9 +24,10 @@ const startSever = async () => {
     app.use(express.json({limit: '5mb'}));
     app.use(express.urlencoded({limit: '5mb', extended: true}));
 
-    const allowed = ["https://192.168.1.200:4000", "https://192.168.1.120:4000", "https://localhost:4000"];
+    const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000"];
     app.use((req, res, next) => {
-        allowed.includes("https://" + req.headers.host) ? next() : res.status(403).send("Forbidden")
+        console.log(req.headers.host)
+        allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
     })
 
 
