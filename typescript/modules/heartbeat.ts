@@ -5,14 +5,14 @@ import {deleteOne, find, findOne, setData} from "./mongo-interface";
 import {getLinnQuery} from "./linnworks/api";
 
 interface mostRecentUpdate {
-    RecentUpdates: {
-        DATE: any
+    recentUpdates: {
+        date: any
     }
 }
 
 interface SQLQueryResult {
     SKU:string
-    DATE:string
+    date:string
 }
 
 export const init = async ()=>{
@@ -24,7 +24,7 @@ export async function beat(){
 
     console.log("Heartbeat:", new Date().toLocaleString('en-GB'))
 
-    const status = (await findOne<mostRecentUpdate>('HeartBeat', {ID: 'DBSTATUS'}, {}))
+    const status = (await findOne<mostRecentUpdate>('Server', {id: 'Heartbeat'}, {}))
     if(!status) return
     await Auth();
     await checkForItemUpdates(status)
@@ -37,10 +37,10 @@ const checkForItemUpdates = async (current: mostRecentUpdate) => {
 
     const linnQuery = await getLinnQuery<SQLQueryResult>(
         `SELECT ItemNumber AS SKU,
-                ModifiedDate AS 'DATE'
+                ModifiedDate AS 'date'
          FROM StockItem
          WHERE bLogicalDelete = 0
-           AND ModifiedDate > '${current.RecentUpdates.DATE}'
+           AND ModifiedDate > '${current.recentUpdates.date}'
          ORDER BY ModifiedDate DESC`
     )
 
@@ -62,7 +62,7 @@ const checkForStockUpdates = async (current: mostRecentUpdate) => {
          FROM [StockItem] si
              INNER JOIN [StockLevel] sl on si.pkStockItemId = sl.fkStockItemId
          WHERE bLogicalDelete = 0
-           AND sl.LastUpdateDate > '${current.RecentUpdates.DATE}'
+           AND sl.LastUpdateDate > '${current.recentUpdates.date}'
          ORDER BY sl.LastUpdateDate DESC`)
 
     const UpdateStock = linnQuery.Results;
@@ -80,7 +80,7 @@ const checkForStockUpdates = async (current: mostRecentUpdate) => {
 const logDataAndUpdateDBStatus = async (data:SQLQueryResult[], type:string) => {
     for (let v of data) console.dir(v, { color: true, depth: 2 })
     console.log(`HB: ${type} Update Needed`)
-    await setData('HeartBeat', {ID: 'DBSTATUS'}, {RecentUpdates: data[0]})
+    await setData('Server', {id: 'Heartbeat'}, {recentUpdates: data[0]})
 }
 
 const skuList = (data:SQLQueryResult[]) => {
@@ -99,7 +99,7 @@ const dbCleanUp = async () => {
     const data = linnQuery.Results as {SKU:string}[];
     const skuList = data.map( e => { return e.SKU })
 
-    const result = await find<{ SKU: string }>("New-Items", {ID: {$ne: 'DBSTATUS'}}, {SKU: 1})
+    const result = await find<{ SKU: string }>("New-Items", {}, {SKU: 1})
     if(!result) return
 
     for (let value of result) {
