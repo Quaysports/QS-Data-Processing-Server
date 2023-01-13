@@ -8,23 +8,25 @@ import {GUID} from "../utilities";
 export default async function UpdateLinnworksChannelPrices(
     merge: Map<string, sbt.Item> = new Map<string, sbt.Item>(), data?: sbt.Item[]
 ) {
-    await Auth(true)
-    await mongoI.bulkUpdateItems(await GetLinnworksChannelPrices())
-
-    let amazonQuery, ebayQuery, magentoQuery
-
 
     let argSkuList = data ? data.map(item => item.SKU) : undefined
-    amazonQuery = await mongoI.findAggregate<QueryResult>(
-        "Items",
+    let skuList = data ? data.reduce((str, item) => {
+        return str === '' ? `'${item.SKU}'` : str + `,'${item.SKU}'`
+    }, "") : ""
+
+    await Auth(true)
+    await mongoI.bulkUpdateItems(await GetLinnworksChannelPrices(undefined, skuList))
+
+    let amazonQuery = await mongoI.findAggregate<QueryResult>(
+        "New-Items",
         generateAggrigationQuery("amazon", argSkuList)
     )
-    ebayQuery = await mongoI.findAggregate<QueryResult>(
-        "Items",
+    let ebayQuery = await mongoI.findAggregate<QueryResult>(
+        "New-Items",
         generateAggrigationQuery("ebay", argSkuList)
     )
-    magentoQuery = await mongoI.findAggregate<QueryResult>(
-        "Items",
+    let magentoQuery = await mongoI.findAggregate<QueryResult>(
+        "New-Items",
         generateAggrigationQuery("magento", argSkuList)
     )
 
@@ -33,28 +35,25 @@ export default async function UpdateLinnworksChannelPrices(
         ["//api/Inventory/CreateInventoryItemPrices", []],
     ])
 
-    let skuList = ''
+    skuList = ''
     if (amazonQuery && amazonQuery.length > 0) {
         for (let itemResult of amazonQuery) {
-            skuList === '' ? skuList = `'${itemResult.SKU}'` : skuList += `,'${itemResult.SKU}'`
-            addPriceToUpdateMap(updates, 'AMAZON', 'Silver Bullet Trading Ltd', itemResult.AMZPRICEINCVAT!.toString(), itemResult.LINNID, itemResult.CHANNELID)
+            skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
+            addPriceToUpdateMap(updates, 'AMAZON', 'Silver Bullet Trading Ltd', itemResult.price.toString(), itemResult.linnId, itemResult.channelId)
         }
     }
     if (ebayQuery && ebayQuery.length > 0) {
         for (let itemResult of ebayQuery) {
-            skuList === '' ? skuList = `'${itemResult.SKU}'` : skuList += `,'${itemResult.SKU}'`
-            addPriceToUpdateMap(updates, 'EBAY', 'EBAY1_UK', itemResult.EBAYPRICEINCVAT!.toString(), itemResult.LINNID, itemResult.CHANNELID)
+            skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
+            addPriceToUpdateMap(updates, 'EBAY', 'EBAY1_UK', itemResult.price.toString(), itemResult.linnId, itemResult.channelId)
         }
     }
     if (magentoQuery && magentoQuery.length > 0) {
         for (let itemResult of magentoQuery) {
-            console.dir(itemResult, {depth: 7})
-            skuList === '' ? skuList = `'${itemResult.SKU}'` : skuList += `,'${itemResult.SKU}'`
-            addPriceToUpdateMap(updates, 'MAGENTO', 'http://quaysports.com', itemResult.QSPRICEINCVAT!.toString(), itemResult.LINNID, itemResult.CHANNELID)
+            skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
+            addPriceToUpdateMap(updates, 'MAGENTO', 'http://quaysports.com', itemResult.price.toString(), itemResult.linnId, itemResult.channelId)
         }
     }
-
-    console.dir(updates, {depth: 7})
 
     await batchUpdateFromMap(updates)
 
@@ -108,14 +107,10 @@ const batchUpdateFromMap = async (updates: Map<string, object[]>) => {
 
 interface QueryResult {
     SKU: string
-    LINNID: string
-    CHANNELID: string
-    QSPRICEINCVAT?: number
-    QSCHANNELPRICE?: number
-    AMZPRICEINCVAT?: number
-    AMZCHANNELPRICE?: number
-    EBAYPRICEINCVAT?: number
-    EBAYCHANNELPRICE?: number
+    linnId: string
+    channelId: string
+    price: number
+    channelPrice: number
 }
 
 function generateAggrigationQuery(channel: "amazon" | "ebay" | "magento", skus?: string[]) {
@@ -126,16 +121,18 @@ function generateAggrigationQuery(channel: "amazon" | "ebay" | "magento", skus?:
             }
         },
         {
-            'SKU': 1,
-            'linnId': 1,
-            'channelId': `$channelPrices.${channel}.id`,
-            'price': `$prices.${channel}`,
-            'channelPrice': {
-                '$convert': {
-                    'input': `$channelPrices.${channel}.price`,
-                    'to': 'double',
-                    'onNull': 0,
-                    'onError': 0
+            '$project': {
+                'SKU': 1,
+                'linnId': 1,
+                'channelId': `$channelPrices.${channel}.id`,
+                'price': `$prices.${channel}`,
+                'channelPrice': {
+                    '$convert': {
+                        'input': `$channelPrices.${channel}.price`,
+                        'to': 'double',
+                        'onNull': 0,
+                        'onError': 0
+                    }
                 }
             }
         }, {
@@ -156,6 +153,8 @@ function generateAggrigationQuery(channel: "amazon" | "ebay" | "magento", skus?:
     if (skus) { // @ts-ignore
         query[0].$match.SKU = {$in: skus}
     }
+
+    console.dir(query, {depth: 7})
 
     return query
 

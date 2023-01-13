@@ -1,15 +1,19 @@
 import Auth from "../linnworks/auth";
 import {getLinnQuery} from "../linnworks/api";
+import {getItemsFromDB} from "./update-items";
 
 export default async function GetLinnworksChannelPrices(
-    merge = (new Map<string, sbt.Item>()), skus?:string
+    merge:undefined | Map<string,sbt.Item> = undefined, skus?:string
 ) {
     await Auth(true)
     console.log("querying CP data!")
     console.log(new Date())
 
+    if(!merge) { merge = await getItemsFromDB(skus) }
+
     interface SQLQuery {
         ItemNumber: string,
+        linnId: string,
         Source:"amazon" | "ebay" | "magento",
         SubSource:string,
         Price:string,
@@ -17,7 +21,7 @@ export default async function GetLinnworksChannelPrices(
         pkRowId:string
     }
 
-    let query = `SELECT si.ItemNumber,
+    let query = `SELECT si.pkStockItemId as linnId,
                         sp.Source,
                         sp.SubSource,
                         sp.SalePrice as Price,
@@ -32,8 +36,11 @@ export default async function GetLinnworksChannelPrices(
     const result = (await getLinnQuery<SQLQuery>(query)).Results
 
     for (let item of result) {
-        const {ItemNumber, Source, SubSource, Price, UpdateStatus, pkRowId} = item
-        let mergeItem = merge.get(ItemNumber)
+        const {linnId, Source, SubSource, Price, UpdateStatus, pkRowId} = item
+        const channelPricesKey = Source.toLowerCase() as keyof sbt.Item["channelPrices"]
+
+        let mergeItem = merge.get(linnId)
+
         if (!mergeItem) continue
 
         mergeItem!.channelPrices ??= {
@@ -59,13 +66,13 @@ export default async function GetLinnworksChannelPrices(
             updated: (new Date()).toString()
         }
 
-        switch(Source){
+        switch(Source.toLowerCase()){
             case "amazon": if(mergeItem.prices.amazon !== parseFloat(Price)) channelPriceData.updateRequired = true; break;
             case "ebay": if(mergeItem.prices.ebay !== parseFloat(Price)) channelPriceData.updateRequired = true; break;
             case "magento": if(mergeItem.prices.magento !== parseFloat(Price)) channelPriceData.updateRequired = true; break;
         }
 
-        mergeItem!.channelPrices![item.Source] = channelPriceData
+        mergeItem.channelPrices[channelPricesKey] = channelPriceData
     }
     return merge
 }

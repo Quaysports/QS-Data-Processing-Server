@@ -19,11 +19,11 @@ export default async function UpdateMargins (
     console.log("items: " + items.length)
 
     for (let item of items) {
-        let mergeItem = merge.get(item.SKU)
+        let mergeItem = merge.get(item.linnId)
         if(!mergeItem) {
-            merge.set(item.SKU, item)
+            merge.set(item.linnId, item)
         } else {
-            merge.set(item.SKU, {...item, ...mergeItem})
+            merge.set(item.linnId, {...item, ...mergeItem})
         }
     }
 
@@ -37,7 +37,6 @@ export default async function UpdateMargins (
     await postage.initialize()
 
     for(const [_, item] of merge) {
-        console.log(item)
         await ProcessMargins(item, fees, packaging, postage);
     }
 

@@ -6,6 +6,7 @@ export default async function UpdateSoldData(merge: Map<string, sbt.Item>, skus?
     await Auth(true)
     console.log("querying sold data!")
     console.log(new Date())
+    console.log(merge)
 
     let query = skus
         ? {
@@ -25,27 +26,24 @@ export default async function UpdateSoldData(merge: Map<string, sbt.Item>, skus?
     let yearString = `'${cy}','${cy - 1}','${cy - 2}','${cy - 3}','${cy - 4}'`
 
     function queryString(years: string) {
-        return `SELECT 'SKU' = si.ItemNumber,
+        return `SELECT 'linnId' = si.pkStockItemId,
                        'Month' = MONTH (o.dProcessedOn),
                         'Year' = YEAR(o.dProcessedOn),
                         'Qty' = SUM(oi.nqty)
                 FROM
                     [Order] o
-                    INNER JOIN OrderItem oi
-                on o.pkOrderID = oi.fkOrderID
-                    INNER JOIN StockItem si on si.pkstockItemId = oi.fkStockItemID_processed
+                    INNER JOIN OrderItem oi on o.pkOrderID = oi.fkOrderID
+                    INNER JOIN StockItem si on si.pkStockItemId = oi.fkStockItemID_processed
                 WHERE
                     YEAR (o.dProcessedOn) IN (${years})
                   AND si.bLogicalDelete = 0
                   AND si.bContainsComposites = 0 ${skus ? "AND si.ItemNumber IN (" + skus + ")" : ""}
                 GROUP BY
-                    si.ItemNumber, MONTH (o.dProcessedOn), YEAR (o.dProcessedOn)
-                ORDER BY
-                    SKU ASC`
+                    si.pkStockItemId, MONTH (o.dProcessedOn), YEAR (o.dProcessedOn)`
     }
 
     interface SQLQuery {
-        SKU: string,
+        linnId: string,
         Month: number,
         Year: number,
         Qty: string
@@ -56,27 +54,27 @@ export default async function UpdateSoldData(merge: Map<string, sbt.Item>, skus?
     if (linnData.length > 0) {
         let indexTrack: { [key: string]: { [key: number]: number } } = {}
         for (let item of linnData) {
-            let mergeItem = merge.get(item.SKU)!
+            let mergeItem = merge.get(item.linnId)!
             mergeItem.stockHistory ??= []
 
             trackIndex(item, mergeItem.stockHistory, indexTrack)
 
-            mergeItem.stockHistory[indexTrack[item.SKU][item.Year]] ??= Array.from({length: 12}, () => (0))
-            mergeItem.stockHistory[indexTrack[item.SKU][item.Year]][0] = item.Year
-            mergeItem.stockHistory[indexTrack[item.SKU][item.Year]][item.Month] = Number(item["Qty"])
+            mergeItem.stockHistory[indexTrack[item.linnId][item.Year]] ??= Array.from({length: 12}, () => (0))
+            mergeItem.stockHistory[indexTrack[item.linnId][item.Year]][0] = item.Year
+            mergeItem.stockHistory[indexTrack[item.linnId][item.Year]][item.Month] = Number(item["Qty"])
         }
     }
 
     function trackIndex(item: SQLQuery, history: sbt.Item["stockHistory"], indexTrack: { [key: string]: { [key: number]: number } }) {
 
-        if (indexTrack[item.SKU]?.[item.Year]) return
-        indexTrack[item.SKU] ??= {[item.Year]: 0}
+        if (indexTrack[item.linnId]?.[item.Year]) return
+        indexTrack[item.linnId] ??= {[item.Year]: 0}
 
         if (history.length === 0) return
 
-        indexTrack[item.SKU] = {[item.Year]: history.length}
+        indexTrack[item.linnId] = {[item.Year]: history.length}
         history.forEach((year, index) => {
-            if (year[0] === item.Year) indexTrack[item.SKU] = {[item.Year]: index}
+            if (year[0] === item.Year) indexTrack[item.linnId] = {[item.Year]: index}
         })
 
     }

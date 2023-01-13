@@ -15,7 +15,7 @@ export default async function UpdateChannelData(
         return `DECLARE @Results
                       TABLE
                       (
-                          SKU    NVARCHAR(50),
+                          linnId    NVARCHAR(128),
                           YEAR   int,
                           SOURCE NVARCHAR(50),
                           QTY    int
@@ -26,8 +26,8 @@ export default async function UpdateChannelData(
         SET @2year = @year - 2
         WHILE @2year <= @year
             BEGIN
-                INSERT INTO @Results (SKU, YEAR, SOURCE, QTY)
-                SELECT si.ItemNumber AS SKU,
+                INSERT INTO @Results (linnId, YEAR, SOURCE, QTY)
+                SELECT si.pkStockItemID AS linnId,
                        @year         AS YEAR,
                        o.Source      AS SOURCE,
                        SUM(nQty)     AS QTY
@@ -41,20 +41,20 @@ export default async function UpdateChannelData(
                   AND oi.fPricePerUnit > 0
                   AND si.bLogicalDelete = 0
                     ${skus ? "AND si.ItemNumber IN (" + skus + ")" : ""}
-                GROUP BY si.ItemNumber, o.Source
-                ORDER BY si.ItemNumber
+                GROUP BY si.pkStockItemID, o.Source
+                ORDER BY si.pkStockItemID
                 SET @year = @year - 1
             END
         SELECT *
         FROM @Results`
     }
 
-    interface SQLQuery {SKU:string, YEAR:number, SOURCE:string, QTY:string}
+    interface SQLQuery {linnId:string, YEAR:number, SOURCE:string, QTY:string}
 
     const result = (await getLinnQuery<SQLQuery>(queryString(year, skus))).Results
 
     for (let item of result) {
-        let mergeItem = merge.get(item.SKU)
+        let mergeItem = merge.get(item.linnId)
         if(!mergeItem) continue
 
         mergeItem.channelData ??= []

@@ -66,15 +66,15 @@ export default async function UpdateItems(skus?: string) {
     let merge = new Map<string, sbt.Item>()
 
     for (let item of linnData) {
-        let base = merge.get(item.SKU) ?? {...itemTemplate(), ...itemsFromDatabase.get(item.linnId)} ?? itemTemplate()
-        if (!merge.has(item.SKU)) {
+        let base = merge.get(item.linnId) ?? {...itemTemplate(), ...itemsFromDatabase.get(item.linnId)} ?? itemTemplate()
+        if (!merge.has(item.linnId)) {
             base.prices.purchase = 0
             base.weight = 0
             base.compositeItems = []
             base.extendedProperties = []
         }
         processExtendedProperties(base, item)
-        merge.set(item.SKU, updateItem(base, item))
+        merge.set(item.linnId, updateItem(base, item))
 
         //if (item.epName) processExtendedProperties(item, merge.get(item.SKU)!)
     }
@@ -261,7 +261,7 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
     }
 }
 
-const getItemsFromDB = async (skus?: string): Promise<Map<string, sbt.Item>> => {
+export const getItemsFromDB = async (skus?: string): Promise<Map<string, sbt.Item>> => {
 
     let merge;
 

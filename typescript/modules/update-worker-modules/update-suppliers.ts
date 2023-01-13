@@ -9,10 +9,10 @@ export default async function UpdateSuppliers(
     console.log("querying supplier data!")
     console.log(new Date())
 
-    interface SQLQuery {SKU:string, supplier:string, default:string}
+    interface SQLQuery {linnId:string, supplier:string, default:string}
 
 
-    let query = `Select si.ItemNumber as 'SKU', s.SupplierName as 'supplier',  isup.IsDefault as 'default'
+    let query = `Select si.pkStockItemId as 'linnId', s.SupplierName as 'supplier',  isup.IsDefault as 'default'
                  FROM StockItem si
                           INNER JOIN ItemSupplier isup ON si.pkStockItemId = isup.fkStockItemId
                           INNER JOIN Supplier s ON isup.fkSupplierId = s.pkSupplierID
@@ -23,7 +23,7 @@ export default async function UpdateSuppliers(
 
     if (linnData) {
         for (let item of linnData) {
-            let mergeItem = merge.get(item.SKU)
+            let mergeItem = merge.get(item.linnId)
             if(!mergeItem) continue
 
             if(item.default === "True") mergeItem.supplier = item.supplier
