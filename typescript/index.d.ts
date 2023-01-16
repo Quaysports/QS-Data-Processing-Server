@@ -2,14 +2,7 @@ declare namespace sbt {
 
     type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
-    interface ChannelPriceData {
-        price: string;
-        subSource: string;
-        updated: string;
-        id: string;
-        status: number;
-        updateRequired: boolean;
-    }
+
 
     interface Item {
         _id?: string
@@ -88,26 +81,12 @@ declare namespace sbt {
         onOrder:OnOrder[]
         //used to be MD
         marginData: {
-            amazonFees: number,
-            amazonProfitAfterVat: number,
-            amazonProfitLastYear: number,
-            amazonSalesVat: number,
-            ebayFees: number,
-            ebayProfitLastYear: number
-            ebayProfitAfterVat: number
-            ebaySalesVat: number
-            packagingCost: number
-            postageCost: number
-            amazonPrimeProfitAfterVat: number
-            amazonPrimePostageCost: number
-            magentoFees: number
-            magentoProfitAfterVat: number
-            magentoProfitLastYear: number
-            magentoSalesVat: number
-            shopFees: number
-            shopProfitAfterVat: number
-            shopProfitLastYear: number
-            shopSalesVat: number
+            amazon:AmazonMarginData
+            ebay:ChannelMarginData
+            magento:ChannelMarginData
+            shop:ChannelMarginData
+            packaging: number
+            postage: number
             totalProfitLastYear: number
         }
         //used to be CD is it dynamically generated and still used?
@@ -239,6 +218,14 @@ declare namespace sbt {
         source: string;
         quantity: number;
     }
+    interface ChannelPriceData {
+        price: string;
+        subSource: string;
+        updated: string;
+        id: string;
+        status: number;
+        updateRequired: boolean;
+    }
     interface CompositeItems {
         title: string;
         SKU: string;
@@ -251,6 +238,16 @@ declare namespace sbt {
         epType: string;
         epValue: string;
         pkRowId: string;
+    }
+    interface ChannelMarginData {
+        fees: number;
+        profit: number;
+        profitLastYear: number;
+        salesVAT: number;
+    }
+    interface AmazonMarginData extends ChannelMarginData {
+        primeProfit: number
+        primePostage: number
     }
     interface OnOrder {
         confirmed: boolean;

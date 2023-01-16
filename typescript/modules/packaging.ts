@@ -66,7 +66,6 @@ export const linnGet = async () => {
 export class Packaging implements PackagingClass {
 
     async initialize() {
-        await updateAll()
         await get().then((data) => this.packaging = data)
     }
 

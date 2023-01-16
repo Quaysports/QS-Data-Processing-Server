@@ -54,7 +54,6 @@ export const remove = async (data:PostageData) => {
 export class Postage implements PostageClass {
 
     async initialize() {
-        await updateAll()
         await get().then((data) => this.postage = data)
     }
 
