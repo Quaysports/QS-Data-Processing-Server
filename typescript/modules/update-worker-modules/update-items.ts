@@ -115,8 +115,7 @@ function itemTemplate(): sbt.Item {
             notApplicable: {amazon: false, amazonStore: false, ebay: false, magento: false, zenTackle: false},
             prime: false,
             ready: {amazon: false, amazonStore: false, ebay: false, magento: false, zenTackle: false},
-            stockForecast: {hide: false, list: false},
-            stockChecked: false
+            stockForecast: {hide: false, list: false}
         },
         description: "",
         discounts: {magento: 0, shop: 0},

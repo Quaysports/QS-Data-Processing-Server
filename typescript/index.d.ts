@@ -136,7 +136,6 @@ declare namespace sbt {
                 ebayOverride:boolean
                 magentoOverride:boolean
             }
-            stockChecked:boolean
         }
         //used to be IDBEP
         mappedExtendedProperties: {
