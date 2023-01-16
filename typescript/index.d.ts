@@ -78,6 +78,7 @@ declare namespace sbt {
             //map from INVCHECKDATE
             checkedDate: string
         }
+        stockTake:StockTake
         onOrder:OnOrder[]
         //used to be MD
         marginData: {
@@ -256,6 +257,11 @@ declare namespace sbt {
         quantity: number;
     }
 
+    export interface StockTake {
+        checked?: boolean;
+        date?: string | null;
+        quantity?: number;
+    }
     // struct for node worker return
 
     interface WorkerData {

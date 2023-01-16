@@ -153,6 +153,7 @@ function itemTemplate(): sbt.Item {
         shelfLocation: {letter: "", number: "", prefix: ""},
         shortDescription: "",
         stock: {checkedDate: "", default: 0, minimum: 0, total: 0, value: 0, warehouse: 0},
+        stockTake: {checked: false, date: undefined, quantity: 0},
         stockHistory: [],
         supplier: "",
         suppliers: [],
