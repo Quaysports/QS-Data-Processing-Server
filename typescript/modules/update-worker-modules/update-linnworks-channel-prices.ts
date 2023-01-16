@@ -87,7 +87,7 @@ function addPriceToUpdateMap(map: Map<string, object[]>, source: string, subsour
 }
 
 const batchUpdateFromMap = async (updates: Map<string, object[]>) => {
-    console.dir(updates, {depth: 5})
+
     let results: object[] = []
 
     for (const [path, array] of updates) {
@@ -153,8 +153,6 @@ function generateAggrigationQuery(channel: "amazon" | "ebay" | "magento", skus?:
     if (skus) { // @ts-ignore
         query[0].$match.SKU = {$in: skus}
     }
-
-    console.dir(query, {depth: 7})
 
     return query
 

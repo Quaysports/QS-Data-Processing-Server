@@ -6,7 +6,6 @@ export default async function UpdateSoldData(merge: Map<string, sbt.Item>, skus?
     await Auth(true)
     console.log("querying sold data!")
     console.log(new Date())
-    console.log(merge)
 
     let query = skus
         ? {
@@ -44,39 +43,30 @@ export default async function UpdateSoldData(merge: Map<string, sbt.Item>, skus?
 
     interface SQLQuery {
         linnId: string,
-        Month: number,
-        Year: number,
+        Month: string,
+        Year: string,
         Qty: string
     }
 
     const linnData = (await getLinnQuery<SQLQuery>(queryString(yearString))).Results
 
     if (linnData.length > 0) {
-        let indexTrack: { [key: string]: { [key: number]: number } } = {}
         for (let item of linnData) {
-            let mergeItem = merge.get(item.linnId)!
+            let mergeItem = merge.get(item.linnId)
+            if (!mergeItem) continue
+
             mergeItem.stockHistory ??= []
 
-            trackIndex(item, mergeItem.stockHistory, indexTrack)
-
-            mergeItem.stockHistory[indexTrack[item.linnId][item.Year]] ??= Array.from({length: 12}, () => (0))
-            mergeItem.stockHistory[indexTrack[item.linnId][item.Year]][0] = item.Year
-            mergeItem.stockHistory[indexTrack[item.linnId][item.Year]][item.Month] = Number(item["Qty"])
+            let pos = mergeItem.stockHistory.findIndex(i => i[0] === Number(item.Year))
+            if (pos === -1) {
+                let newYearArray = Array.from({length: 12}, () => (0))
+                newYearArray[0] = Number(item.Year)
+                newYearArray[Number(item.Month)] = Number(item.Qty)
+                mergeItem.stockHistory.push(newYearArray)
+            } else {
+                mergeItem.stockHistory[pos][Number(item.Month)] = Number(item.Qty)
+            }
         }
-    }
-
-    function trackIndex(item: SQLQuery, history: sbt.Item["stockHistory"], indexTrack: { [key: string]: { [key: number]: number } }) {
-
-        if (indexTrack[item.linnId]?.[item.Year]) return
-        indexTrack[item.linnId] ??= {[item.Year]: 0}
-
-        if (history.length === 0) return
-
-        indexTrack[item.linnId] = {[item.Year]: history.length}
-        history.forEach((year, index) => {
-            if (year[0] === item.Year) indexTrack[item.linnId] = {[item.Year]: index}
-        })
-
     }
 
     return merge as Map<string, sbt.Item>
