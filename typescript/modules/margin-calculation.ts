@@ -11,7 +11,6 @@ export default async function ProcessMargins(item: sbt.Item, Fees: FeesClass, Pa
         postage: 0,
         shop: {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
         totalProfitLastYear: 0
-
     }
 
     await getPostageAndPackaging(item, Packaging, Postage)
@@ -171,18 +170,28 @@ const getShopListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
     )
     return
 }
-
 const getLastYearChannelProfits = async (item: sbt.Item) => {
 
-    let year = ((new Date().getFullYear()) - 1)
-    item.marginData.totalProfitLastYear = 0;
+    try {
+        let year = ((new Date().getFullYear()) - 1)
+        item.marginData.totalProfitLastYear = 0;
 
-    for (let data of item.channelData) {
-        if (data.year !== year) continue;
-        let channel = data.source.toLowerCase() as "amazon" | "ebay" | "magento" | "shop"
-        item.marginData[channel].profitLastYear = data.quantity * item.marginData[channel].profitLastYear
-        item.marginData.totalProfitLastYear += item.marginData[channel].profitLastYear
+        for (let data of item.channelData) {
+            if (data.year !== year) continue;
+
+            let channel = data.source.toLowerCase()
+
+            if (channel !== "amazon" &&
+                channel !== "ebay" &&
+                channel !== "magento" &&
+                channel !== "shop") continue;
+
+            item.marginData[channel].profitLastYear = data.quantity * item.marginData[channel].profitLastYear
+            item.marginData.totalProfitLastYear += item.marginData[channel].profitLastYear
+        }
+
+    } catch(e) {
+        console.log(item.SKU, e)
     }
-
     return
 }
