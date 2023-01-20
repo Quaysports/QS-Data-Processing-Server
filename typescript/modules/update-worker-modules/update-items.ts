@@ -111,7 +111,7 @@ function itemTemplate(): sbt.Item {
                 photos: false,
                 zenTackle: false
             },
-            marginCalculator: {hide:false, amazonOverride: false, ebayOverride: false, magentoOverride: false},
+            marginCalculator: {hide: false, amazonOverride: false, ebayOverride: false, magentoOverride: false},
             notApplicable: {amazon: false, amazonStore: false, ebay: false, magento: false, zenTackle: false},
             prime: false,
             ready: {amazon: false, amazonStore: false, ebay: false, magento: false, zenTackle: false},
@@ -248,7 +248,8 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
         prices: {
             ...item.prices,
             retail: linnItem.retailPrice ? parseFloat(linnItem.retailPrice) : 0
-        }
+        },
+        tags: cleanTags(item.tags),
     }
 }
 
@@ -267,34 +268,83 @@ export const getItemsFromDB = async (skus?: string): Promise<Map<string, sbt.Ite
     return merge
 }
 
-function processExtendedProperties(item:sbt.Item, linnItem:SQLQuery){
+function cleanTags(tags: string[]) {
+    let newTags: string[] = []
+    if (tags.length <= 0) return newTags
+
+    for (let tag of tags) {
+        if (!newTags.includes(tag)) {
+            newTags.push(tag)
+        }
+    }
+    return newTags
+}
+
+function processExtendedProperties(item: sbt.Item, linnItem: SQLQuery) {
     let {epName, epValue} = linnItem
     let mapEp = item.mappedExtendedProperties
 
-    switch(epName){
-        case "brand": item.brand = epValue; break
-        case "Amz Browse Node 1": mapEp.category1 = epValue; break
-        case "Amz Browse Node 2": mapEp.category2 = epValue; break
-        case "Amz Search Term 1": mapEp.searchTerm1 = epValue; break
-        case "Amz Search Term 2": mapEp.searchTerm2 = epValue; break
-        case "Amz Search Term 3": mapEp.searchTerm3 = epValue; break
-        case "Amz Search Term 4": mapEp.searchTerm4 = epValue; break
-        case "Amz Search Term 5": mapEp.searchTerm5 = epValue; break
-        case "Amz Bullet Point 1": mapEp.bulletPoint1 = epValue; break
-        case "Amz Bullet Point 2": mapEp.bulletPoint2 = epValue; break
-        case "Amz Bullet Point 3": mapEp.bulletPoint3 = epValue; break
-        case "Amz Bullet Point 4": mapEp.bulletPoint4 = epValue; break
-        case "Amz Bullet Point 5": mapEp.bulletPoint5 = epValue; break
-        case "Amz Department": mapEp.amazonDepartment = epValue; break
-        case "Sport": mapEp.amazonSport = epValue; break
-        case "Trade Pack": mapEp.tradePack = epValue; break
-        case "Special Price": mapEp.specialPrice = epValue; break
-        case "Till Filter": mapEp.tillFilter = epValue; break
+    switch (epName) {
+        case "brand":
+            item.brand = epValue;
+            break
+        case "Amz Browse Node 1":
+            mapEp.category1 = epValue;
+            break
+        case "Amz Browse Node 2":
+            mapEp.category2 = epValue;
+            break
+        case "Amz Search Term 1":
+            mapEp.searchTerm1 = epValue;
+            break
+        case "Amz Search Term 2":
+            mapEp.searchTerm2 = epValue;
+            break
+        case "Amz Search Term 3":
+            mapEp.searchTerm3 = epValue;
+            break
+        case "Amz Search Term 4":
+            mapEp.searchTerm4 = epValue;
+            break
+        case "Amz Search Term 5":
+            mapEp.searchTerm5 = epValue;
+            break
+        case "Amz Bullet Point 1":
+            mapEp.bulletPoint1 = epValue;
+            break
+        case "Amz Bullet Point 2":
+            mapEp.bulletPoint2 = epValue;
+            break
+        case "Amz Bullet Point 3":
+            mapEp.bulletPoint3 = epValue;
+            break
+        case "Amz Bullet Point 4":
+            mapEp.bulletPoint4 = epValue;
+            break
+        case "Amz Bullet Point 5":
+            mapEp.bulletPoint5 = epValue;
+            break
+        case "Amz Department":
+            mapEp.amazonDepartment = epValue;
+            break
+        case "Sport":
+            mapEp.amazonSport = epValue;
+            break
+        case "Trade Pack":
+            mapEp.tradePack = epValue;
+            break
+        case "Special Price":
+            mapEp.specialPrice = epValue;
+            break
+        case "Till Filter":
+            mapEp.tillFilter = epValue;
+            break
         case "Tags": {
             let tags = epValue.split(",")
-            for(let tag of tags){
-                if(!item.tags.includes(tag)){
-                    item.tags.push(tag.trim().toLowerCase())
+            for (let tag of tags) {
+                let convertedTag = tag.trim().toLowerCase()
+                if (!item.tags.includes(convertedTag)) {
+                    item.tags.push(convertedTag)
                 }
             }
         }
