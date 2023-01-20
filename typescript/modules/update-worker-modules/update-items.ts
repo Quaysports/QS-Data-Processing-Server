@@ -290,5 +290,13 @@ function processExtendedProperties(item:sbt.Item, linnItem:SQLQuery){
         case "Trade Pack": mapEp.tradePack = epValue; break
         case "Special Price": mapEp.specialPrice = epValue; break
         case "Till Filter": mapEp.tillFilter = epValue; break
+        case "Tags": {
+            let tags = epValue.split(",")
+            for(let tag of tags){
+                if(!item.tags.includes(tag)){
+                    item.tags.push(tag.trim().toLowerCase())
+                }
+            }
+        }
     }
 }
