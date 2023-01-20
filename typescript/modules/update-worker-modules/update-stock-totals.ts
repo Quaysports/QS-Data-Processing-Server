@@ -45,7 +45,7 @@ export default async function UpdateStockTotals(merge?: Map<string, sbt.Item>, s
             mergeItem.stock.minimum = parseFloat(item.minimum)
             mergeItem.stock.total = mergeItem.stock.default + mergeItem.stock.warehouse
             if (purchasePrice > 0 && quantity > 0) {
-                mergeItem.stock.value += quantity * purchasePrice
+                mergeItem.stock.value = mergeItem.stock.total * purchasePrice
             }
         }
         if (item.location === 'warehouse') {

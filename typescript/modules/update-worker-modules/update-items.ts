@@ -244,6 +244,10 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
         packaging: {
             ...item.packaging,
             group: linnItem.packagingGroup
+        },
+        prices: {
+            ...item.prices,
+            retail: linnItem.retailPrice ? parseFloat(linnItem.retailPrice) : 0
         }
     }
 }
