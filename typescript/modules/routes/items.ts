@@ -26,7 +26,7 @@ const dbUpdateImage = async (item: DbImage) => {
 export async function uploadImages(file: { _id: string, SKU: string, id: string, filename: string, image: string }) {
 
     const makeImagesFolder = async () => {
-        if (!fs.existsSync('../images')) await fs.mkdirSync("./images")
+        if (!fs.existsSync('./images')) await fs.mkdirSync("./images")
         return './images'
     }
 
