@@ -93,10 +93,10 @@ export const deleteImage = async (id:keyof sbt.Item["images"], item:sbt.Item) =>
     }
     const inventoryItemImages= {
         [item.linnId]: [
-            item.images[id].url
+            item.images[id].id
         ]
     }
-
+    console.log(inventoryItemImages)
     let res = await updateLinnItem('/api/Inventory/DeleteImagesFromInventoryItem', `inventoryItemImages=${JSON.stringify(inventoryItemImages)}`)
     console.log(res)
     if(item._id) delete item._id
