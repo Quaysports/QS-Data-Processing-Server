@@ -1,5 +1,5 @@
 import fs from "fs";
-import {findOne, setData} from "../mongo-interface";
+import {findOne, setData, unsetData} from "../mongo-interface";
 
 interface DbImage extends Pick<sbt.Item, "_id" | "SKU"> {
     images: {
@@ -86,4 +86,19 @@ export async function uploadImages(file: { _id: string, SKU: string, id: string,
             })
         }
     })
+}
+export const deleteImage = async (id:keyof sbt.Item["images"], item:sbt.Item) => {
+    const result = await unsetData("New-Items", {SKU: item.SKU}, {["images." + id]: ""})
+    console.log(result)
+    if (result && result.modifiedCount === 0) return {status: "No image found"}
+
+    const files = fs.readdirSync(`./images/${item.SKU}/`)
+    console.log(files)
+    if (files.indexOf(item.images[id].filename) !== -1) {
+        console.log(item.images[id])
+        console.log(item.images[id].link)
+        if (item.images[id].link === "") fs.unlinkSync(`./images/${item.SKU}/${item.images[id].filename}`)
+    }
+
+    return {status: "Deleted"}
 }
