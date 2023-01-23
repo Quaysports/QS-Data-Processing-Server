@@ -14,8 +14,12 @@ const PostRequestOptions = (path: string) => {
         }
     }
 }
+interface DataWithStatus extends Object {
+    code:number
+    data:object
+}
 export default function PostRequest(path: string, postData: string) {
-    return new Promise<object>(resolve => {
+    return new Promise<object | DataWithStatus>(resolve => {
         let str = '';
         let postReq = https.request(PostRequestOptions(path), res => {
             res.setEncoding('utf8');
