@@ -198,7 +198,7 @@ function itemTemplate(): sbt.Item {
 }
 
 const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
-
+    let baseItem = itemTemplate()
     let composite = linnItem.isComposite.toLowerCase() === 'true'
 
     if (composite) {
@@ -250,6 +250,20 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
             retail: linnItem.retailPrice ? parseFloat(linnItem.retailPrice) : 0
         },
         tags: cleanTags(item.tags),
+        images:{
+            main:{...baseItem.images.main, ...item.images.main},
+            image1:{...baseItem.images.image1, ...item.images.image1},
+            image2:{...baseItem.images.image2, ...item.images.image2},
+            image3:{...baseItem.images.image3, ...item.images.image3},
+            image4:{...baseItem.images.image4, ...item.images.image4},
+            image5:{...baseItem.images.image5, ...item.images.image5},
+            image6:{...baseItem.images.image6, ...item.images.image6},
+            image7:{...baseItem.images.image7, ...item.images.image7},
+            image8:{...baseItem.images.image8, ...item.images.image8},
+            image9:{...baseItem.images.image9, ...item.images.image9},
+            image10:{...baseItem.images.image10, ...item.images.image10},
+            image11:{...baseItem.images.image11, ...item.images.image11},
+        }
     }
 }
 
