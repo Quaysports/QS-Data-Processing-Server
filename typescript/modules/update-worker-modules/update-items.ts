@@ -336,6 +336,9 @@ function processExtendedProperties(item: sbt.Item, linnItem: SQLQuery) {
         case "Special Price":
             mapEp.specialPrice = epValue;
             break
+        case "Shipping Format":
+            mapEp.shippingFormat = epValue;
+            break
         case "Till Filter":
             mapEp.tillFilter = epValue;
             break
