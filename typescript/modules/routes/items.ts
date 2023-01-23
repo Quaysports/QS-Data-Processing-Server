@@ -94,7 +94,7 @@ export const deleteImage = async (id:keyof sbt.Item["images"], item:sbt.Item) =>
     }
     const inventoryItemImages= {
         [item.linnId]: [
-            item.images[id].id
+            item.images[id].url
         ]
     }
     console.log(inventoryItemImages)
