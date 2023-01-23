@@ -86,7 +86,8 @@ export async function uploadImages(file: { _id: string, SKU: string, id: string,
     })
 }
 export const deleteImage = async (id:keyof sbt.Item["images"], item:sbt.Item) => {
-
+    console.log("id:", id)
+    console.dir(item,{depth:5})
     const files = fs.readdirSync(`./images/${item.SKU}/`)
     if (files.indexOf(item.images[id].filename) !== -1) {
         if (item.images[id].link === "") fs.unlinkSync(`./images/${item.SKU}/${item.images[id].filename}`)
