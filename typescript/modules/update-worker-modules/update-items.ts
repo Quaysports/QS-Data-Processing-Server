@@ -285,7 +285,7 @@ function processExtendedProperties(item: sbt.Item, linnItem: SQLQuery) {
     let mapEp = item.mappedExtendedProperties
 
     switch (epName) {
-        case "brand":
+        case "Brand":
             item.brand = epValue;
             break
         case "Amz Browse Node 1":
