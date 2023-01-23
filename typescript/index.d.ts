@@ -207,7 +207,8 @@ declare namespace sbt {
         }
     }
     interface Image {
-        id: string;
+        id: string
+        url: string
         filename: string;
         link: string;
     }
