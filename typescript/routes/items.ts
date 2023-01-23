@@ -1,5 +1,5 @@
 import fs from "fs";
-import {uploadImages} from "../modules/routes/items";
+import {deleteImage, uploadImages} from "../modules/routes/items";
 import express = require('express')
 import {postToWorker} from "../modules/worker/worker-factory";
 
@@ -28,6 +28,9 @@ router.post('/UpdateLinnworksChannelPrices', async (req, res) => {
         { type: "updateLinnChannelPrices", msg: "", reqId: "", data: { items:req.body.items }, id: new Date().getTime().toString() }
     )
     res.send({ status: 'done' })
+})
+router.post('/DeleteImage', async (req, res)=> {
+    res.send(await deleteImage(req.body.id, req.body.item))
 })
 
 export = router
