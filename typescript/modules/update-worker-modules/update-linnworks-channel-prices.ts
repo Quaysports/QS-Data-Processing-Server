@@ -39,19 +39,19 @@ export default async function UpdateLinnworksChannelPrices(
     if (amazonQuery && amazonQuery.length > 0) {
         for (let itemResult of amazonQuery) {
             skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
-            addPriceToUpdateMap(updates, 'AMAZON', 'Silver Bullet Trading Ltd', itemResult.price.toString(), itemResult.linnId, itemResult.channelId)
+            addPriceToUpdateMap(updates, 'AMAZON', 'Silver Bullet Trading Ltd', itemResult.price, itemResult.linnId, itemResult.channelId)
         }
     }
     if (ebayQuery && ebayQuery.length > 0) {
         for (let itemResult of ebayQuery) {
             skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
-            addPriceToUpdateMap(updates, 'EBAY', 'EBAY1_UK', itemResult.price.toString(), itemResult.linnId, itemResult.channelId)
+            addPriceToUpdateMap(updates, 'EBAY', 'EBAY1_UK', itemResult.price, itemResult.linnId, itemResult.channelId)
         }
     }
     if (magentoQuery && magentoQuery.length > 0) {
         for (let itemResult of magentoQuery) {
             skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
-            addPriceToUpdateMap(updates, 'MAGENTO', 'http://quaysports.com', itemResult.price.toString(), itemResult.linnId, itemResult.channelId)
+            addPriceToUpdateMap(updates, 'MAGENTO', 'http://quaysports.com', itemResult.price, itemResult.linnId, itemResult.channelId)
         }
     }
 
@@ -63,13 +63,13 @@ export default async function UpdateLinnworksChannelPrices(
 
 }
 
-function addPriceToUpdateMap(map: Map<string, object[]>, source: string, subsource: string, price: string, linnid: string, id?: string) {
+function addPriceToUpdateMap(map: Map<string, object[]>, source: string, subsource: string, price: number, linnid: string, id?: string) {
     if (id) {
         map.get("//api/Inventory/UpdateInventoryItemPrices")!.push({
             pkRowId: id,
             Source: source,
             SubSource: subsource,
-            Price: price,
+            Price: (price / 100).toFixed(2),
             UpdateStatus: 0,
             Tag: '',
             Rules: [],
@@ -80,7 +80,7 @@ function addPriceToUpdateMap(map: Map<string, object[]>, source: string, subsour
             pkRowId: GUID(),
             Source: source,
             SubSource: subsource,
-            Price: price,
+            Price: (price / 100).toFixed(2),
             StockItemId: linnid
         })
     }
