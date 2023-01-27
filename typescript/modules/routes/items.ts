@@ -1,5 +1,6 @@
 import fs from "fs";
-import {findOne, setData, unsetData} from "../mongo-interface";
+import {findOne, setData} from "../mongo-interface";
+import {updateLinnItem} from "../linnworks/api";
 
 interface DbImage extends Pick<sbt.Item, "_id" | "SKU"> {
     images: {
@@ -12,14 +13,10 @@ const dbUpdateImage = async (item: DbImage) => {
 
     let result = await findOne<sbt.Item>("New-Items", {SKU: item.SKU}, {images: 1})
     if (result) {
-        for (let i in item.images) {
-            let key = i as keyof sbt.Item["images"]
-            result.images[key] = {...result.images[key], ...item.images[i]}
-        }
-        await setData("New-Items", {SKU: item.SKU}, result)
-        return result
+        await setData("New-Items", {SKU: item.SKU}, {...result, ...item})
+        return {status:"done"}
     } else {
-        return result
+        return {status:"not found"}
     }
 }
 
@@ -55,7 +52,8 @@ export async function uploadImages(file: { _id: string, SKU: string, id: string,
             [file.id as "main"]: {
                 filename: file.filename,
                 id: "",
-                link: ""
+                link: "",
+                url:""
             }
         }
     }
@@ -88,17 +86,30 @@ export async function uploadImages(file: { _id: string, SKU: string, id: string,
     })
 }
 export const deleteImage = async (id:keyof sbt.Item["images"], item:sbt.Item) => {
-    const result = await unsetData("New-Items", {SKU: item.SKU}, {["images." + id]: ""})
-    console.log(result)
-    if (result && result.modifiedCount === 0) return {status: "No image found"}
-
+    console.log("id:", id)
+    console.dir(item,{depth:5})
     const files = fs.readdirSync(`./images/${item.SKU}/`)
-    console.log(files)
     if (files.indexOf(item.images[id].filename) !== -1) {
-        console.log(item.images[id])
-        console.log(item.images[id].link)
         if (item.images[id].link === "") fs.unlinkSync(`./images/${item.SKU}/${item.images[id].filename}`)
     }
+    const inventoryItemImages= {
+        [item.linnId]: [
+            item.images[id].url
+        ]
+    }
+    console.log(inventoryItemImages)
+    let res = await updateLinnItem('/api/Inventory/DeleteImagesFromInventoryItem', `inventoryItemImages=${JSON.stringify(inventoryItemImages)}`)
+    console.log(res)
+    if(item._id) delete item._id
+    const result = await setData("New-Items", {SKU: item.SKU}, {
+        ...item,
+        images:{
+            ...item.images,
+            [id]: {filename: "", id: "", link: "", url:""}
+        }
+    })
+
+    if (result && result.modifiedCount === 0) return {status: "No image found"}
 
     return {status: "Deleted"}
 }

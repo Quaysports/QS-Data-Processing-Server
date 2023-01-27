@@ -13,7 +13,6 @@ export const updateLinnItem = async (path: string, updateData: string) => {
         updateData
     )
 }
-
 export const getPostalServices = async () => {
     return await PostRequest(
         '/api/PostalServices/GetPostalServices',
