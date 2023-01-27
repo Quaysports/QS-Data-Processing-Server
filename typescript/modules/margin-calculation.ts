@@ -113,7 +113,7 @@ const getMagentoListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
         let discountPercentage = item.discounts.magento ? 1 - (item.discounts.magento / 100) : 1
         item.prices.magento = discountPercentage === 1
             ? item.prices.retail
-            : item.prices.retail ? ((Math.floor((item.prices.retail! * 100) * discountPercentage)) / 100) : 0;
+            : roundToNearest(item.prices.retail * discountPercentage)
 
         item.channelPrices.magento.updateRequired = item.channelPrices.magento.price !== item.prices.magento
     }
@@ -149,11 +149,11 @@ const getShopListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
     if (item.prices.retail) {
         item.prices.shop = discountPercentage === 1
             ? item.prices.retail
-            : ((Math.ceil((item.prices.retail * 100) * discountPercentage)) / 100)
+            : roundToNearest(item.prices.retail * discountPercentage)
     } else if (item.prices.magento) {
         item.prices.shop = discountPercentage === 1
             ? item.prices.magento
-            : ((Math.ceil((Number(item.prices.magento) * 100) * discountPercentage)) / 100)
+            : roundToNearest(item.prices.magento * discountPercentage)
     } else {
         item.prices.shop = 0;
         item.marginData.shop.profit = 0;
@@ -194,4 +194,21 @@ const getLastYearChannelProfits = async (item: sbt.Item) => {
         console.log(item.SKU, e)
     }
     return
+}
+
+// converts a number to the nearest 0.05 or 0.99
+const roundToNearest = (num: number):number => {
+
+    let rounded = Math.round(num)
+    let decimal = rounded % 100
+    let whole = rounded - decimal
+
+    let decimalRound = whole < 500
+        ? (Math.ceil(decimal / 100 * 20) / 20) * 100
+        : (Math.ceil(decimal / 100 * 4) / 4) * 100
+
+    if (decimalRound === 0) return whole + decimalRound - 1
+    if (decimalRound > 90) return whole + 99
+
+    return whole + decimalRound
 }
