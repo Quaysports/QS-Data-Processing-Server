@@ -25,12 +25,12 @@ export default async function ProcessMargins(item: sbt.Item, Fees: FeesClass, Pa
 const getPostageAndPackaging = async (item: sbt.Item, Packaging: PackagingClass, Postage: PostageClass) => {
 
     let postage = await Postage.find(item.postage.id)
-    if (!postage) postage = {POSTCOSTEXVAT: 0, POSTID: item.postage.id}
-    item.marginData.postage = modifyPostVal(postage.POSTCOSTEXVAT, item.postage.modifier)
+    if (!postage) postage = {format: "", tag: "", vendor: "", cost: 0, id: ""}
+    item.marginData.postage = modifyPostVal(postage.cost, item.postage.modifier)
 
     let amazonPrimePostage = await Postage.find("30823674-1131-4087-a2d0-c50fe871548e")
-    if (!amazonPrimePostage) amazonPrimePostage = {POSTCOSTEXVAT: 0, POSTID: "30823674-1131-4087-a2d0-c50fe871548e"}
-    item.marginData.amazon.primePostage = modifyPostVal(amazonPrimePostage!.POSTCOSTEXVAT, item.postage.modifier)
+    if (!amazonPrimePostage) amazonPrimePostage = {format: "", tag: "", vendor: "", cost: 0, id: "30823674-1131-4087-a2d0-c50fe871548e"}
+    item.marginData.amazon.primePostage = modifyPostVal(amazonPrimePostage.cost, item.postage.modifier)
 
     function modifyPostVal(postVal: number, mod: string | number = '0'): number {
         if (mod !== 'x2' && mod !== 'x3') return postVal + Number(mod)
@@ -45,14 +45,14 @@ const getPostageAndPackaging = async (item: sbt.Item, Packaging: PackagingClass,
     }
 
     let packaging = await Packaging.find(item.packaging.group)
-    item.marginData.packaging = packaging?.PRICE ? packaging.PRICE : 0.1
+    item.marginData.packaging = packaging?.price || 0.1
 }
 
 const getAmazonListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
 
     if (item.tags.includes("domestic")) {
         if (!item.prices.amazon) item.prices.retail ? item.prices.amazon = item.prices.retail : 0;
-        item.channelPrices.amazon.updateRequired = parseFloat(item.channelPrices.amazon.price) !== item.prices.amazon
+        item.channelPrices.amazon.updateRequired = item.channelPrices.amazon.price !== item.prices.amazon
     }
 
     if (!item.prices.amazon) {
@@ -86,7 +86,7 @@ const getEbayListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
 
     if (item.tags.includes("domestic")) {
         if (!item.prices.ebay) item.prices.retail ? item.prices.ebay = item.prices.retail : 0;
-        item.channelPrices.ebay.updateRequired = parseFloat(item.channelPrices.ebay.price) !== item.prices.ebay
+        item.channelPrices.ebay.updateRequired = item.channelPrices.ebay.price !== item.prices.ebay
     }
 
     if (!item.prices.ebay) {
@@ -115,7 +115,7 @@ const getMagentoListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
             ? item.prices.retail
             : item.prices.retail ? ((Math.floor((item.prices.retail! * 100) * discountPercentage)) / 100) : 0;
 
-        item.channelPrices.magento.updateRequired = parseFloat(item.channelPrices.magento.price) !== item.prices.magento
+        item.channelPrices.magento.updateRequired = item.channelPrices.magento.price !== item.prices.magento
     }
 
     if (!item.prices.magento) {

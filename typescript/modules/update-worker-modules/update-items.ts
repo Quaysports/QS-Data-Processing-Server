@@ -90,10 +90,10 @@ function itemTemplate(): sbt.Item {
         brandLabel: {brand: "", image: "", location: "", path: "", title1: "", title2: ""},
         channelData: [],
         channelPrices: {
-            amazon: {id: "", price: "", status: 0, subSource: "", updateRequired: false, updated: ""},
-            ebay: {id: "", price: "", status: 0, subSource: "", updateRequired: false, updated: ""},
-            magento: {id: "", price: "", status: 0, subSource: "", updateRequired: false, updated: ""},
-            shop: {price: "", status: 0}
+            amazon: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
+            ebay: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
+            magento: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
+            shop: {price: 0, status: 0}
         },
         checkboxStatus: {
             done: {
@@ -120,18 +120,18 @@ function itemTemplate(): sbt.Item {
         description: "",
         discounts: {magento: 0, shop: 0},
         images: {
-            image1: {filename: "", id: "", url:"", link: ""},
-            image2: {filename: "", id: "", url:"", link: ""},
-            image3: {filename: "", id: "", url:"", link: ""},
-            image4: {filename: "", id: "", url:"", link: ""},
-            image5: {filename: "", id: "", url:"", link: ""},
-            image6: {filename: "", id: "", url:"", link: ""},
-            image7: {filename: "", id: "", url:"", link: ""},
-            image8: {filename: "", id: "", url:"", link: ""},
-            image9: {filename: "", id: "", url:"", link: ""},
-            image10: {filename: "", id: "", url:"", link: ""},
-            image11: {filename: "", id: "", url:"", link: ""},
-            main: {filename: "", id: "", url:"", link: ""}
+            image1: {filename: "", id: "", url: "", link: ""},
+            image2: {filename: "", id: "", url: "", link: ""},
+            image3: {filename: "", id: "", url: "", link: ""},
+            image4: {filename: "", id: "", url: "", link: ""},
+            image5: {filename: "", id: "", url: "", link: ""},
+            image6: {filename: "", id: "", url: "", link: ""},
+            image7: {filename: "", id: "", url: "", link: ""},
+            image8: {filename: "", id: "", url: "", link: ""},
+            image9: {filename: "", id: "", url: "", link: ""},
+            image10: {filename: "", id: "", url: "", link: ""},
+            image11: {filename: "", id: "", url: "", link: ""},
+            main: {filename: "", id: "", url: "", link: ""}
         },
         lastUpdate: "",
         legacyShipping: {expedited: "", expeditedAmazon: "", standard: "", standardEbay: ""},
@@ -204,7 +204,7 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
     if (composite) {
         let compositeItem: sbt.CompositeItems = {
             SKU: linnItem.compositeSKU,
-            purchasePrice: parseFloat(linnItem.compositePurchasePrice),
+            purchasePrice: Math.round(parseFloat(linnItem.compositePurchasePrice) * 100),
             quantity: Number(linnItem.compositeQuantity),
             title: linnItem.compositeTitle,
             weight: linnItem.weight ? parseFloat(linnItem.weight) : 0
@@ -216,7 +216,7 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
             item.weight += compositeItem.weight * compositeItem.quantity
         }
     } else {
-        item.prices.purchase = linnItem.purchasePrice ? parseFloat(linnItem.purchasePrice) : 0
+        item.prices.purchase = linnItem.purchasePrice ? Math.round(parseFloat(linnItem.purchasePrice) * 100) : 0
         item.weight = linnItem.weight ? parseFloat(linnItem.weight) : 0
     }
 
@@ -247,22 +247,22 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
         },
         prices: {
             ...item.prices,
-            retail: linnItem.retailPrice ? parseFloat(linnItem.retailPrice) : 0
+            retail: linnItem.retailPrice ? Math.round(parseFloat(linnItem.retailPrice) * 100) : 0
         },
         tags: cleanTags(item.tags),
-        images:{
-            main:{...baseItem.images.main, ...item.images.main},
-            image1:{...baseItem.images.image1, ...item.images.image1},
-            image2:{...baseItem.images.image2, ...item.images.image2},
-            image3:{...baseItem.images.image3, ...item.images.image3},
-            image4:{...baseItem.images.image4, ...item.images.image4},
-            image5:{...baseItem.images.image5, ...item.images.image5},
-            image6:{...baseItem.images.image6, ...item.images.image6},
-            image7:{...baseItem.images.image7, ...item.images.image7},
-            image8:{...baseItem.images.image8, ...item.images.image8},
-            image9:{...baseItem.images.image9, ...item.images.image9},
-            image10:{...baseItem.images.image10, ...item.images.image10},
-            image11:{...baseItem.images.image11, ...item.images.image11},
+        images: {
+            main: {...baseItem.images.main, ...item.images.main},
+            image1: {...baseItem.images.image1, ...item.images.image1},
+            image2: {...baseItem.images.image2, ...item.images.image2},
+            image3: {...baseItem.images.image3, ...item.images.image3},
+            image4: {...baseItem.images.image4, ...item.images.image4},
+            image5: {...baseItem.images.image5, ...item.images.image5},
+            image6: {...baseItem.images.image6, ...item.images.image6},
+            image7: {...baseItem.images.image7, ...item.images.image7},
+            image8: {...baseItem.images.image8, ...item.images.image8},
+            image9: {...baseItem.images.image9, ...item.images.image9},
+            image10: {...baseItem.images.image10, ...item.images.image10},
+            image11: {...baseItem.images.image11, ...item.images.image11},
         }
     }
 }

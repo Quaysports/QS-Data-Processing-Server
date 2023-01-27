@@ -59,7 +59,7 @@ declare namespace sbt {
             magento: ChannelPriceData,
             shop: {
                 status: number,
-                price: string
+                price: number
             }
         }
         //still used?
@@ -218,7 +218,7 @@ declare namespace sbt {
         quantity: number;
     }
     interface ChannelPriceData {
-        price: string;
+        price: number;
         subSource: string;
         updated: string;
         id: string;

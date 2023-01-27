@@ -11,10 +11,10 @@ interface FeesData {
 }
 
 interface Channels {
-    shop: string;
-    magento: string;
-    ebay: string;
-    amazon: string
+    shop: number;
+    magento: number;
+    ebay: number;
+    amazon: number
 }
 
 interface VatApplicable {
@@ -53,9 +53,9 @@ export class Fees implements FeesClass {
 
     calc(id: "amazon" | "ebay" | "magento" | "shop", price: number) {
         if (!this.fd) return 0
-        let per = parseFloat(this.fd.listing[id]) > 0 ? price * (parseFloat(this.fd.listing[id]) / 100) : 0;
-        let flat = parseFloat(this.fd.flat[id])
-        let sub = parseFloat(this.fd.subscription[id])
+        let per = this.fd.listing[id] > 0 ? price * (this.fd.listing[id] / 100) / 100 : 0;
+        let flat = this.fd.flat[id]
+        let sub = this.fd.subscription[id]
         return per + flat + sub;
     }
 

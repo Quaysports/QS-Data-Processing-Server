@@ -3,11 +3,11 @@ import {getLinnQuery} from "./linnworks/api";
 
 export interface PackagingData {
     _id?: { $oid: string };
-    ID: string;
-    LINKEDSKU: string[];
-    NAME: string;
-    TYPE: string;
-    PRICE?: number;
+    id: string;
+    linkedSkus: string[];
+    name: string;
+    type: string;
+    price: number;
 }
 
 export interface PackagingClass {
@@ -16,26 +16,26 @@ export interface PackagingClass {
     find: (id: string) => PackagingData | undefined;
 }
 export const get = async () => {
-    return await find<PackagingData>("Packaging", {})
+    return await find<PackagingData>("New-Packaging", {})
 }
 
 export const update = async (data: PackagingData) => {
     if (data._id) delete data._id
-    return await setData("Packaging", {ID: data.ID}, data)
+    return await setData("New-Packaging", {id: data.id}, data)
 }
 
 export const updateAll = async () => {
     console.log('Packaging', 'Updating from Linnworks')
     const linnData = await linnGet()
-    for (let v of linnData) await setData("Packaging", {ID: v.ID}, v)
+    for (let v of linnData) await setData("New-Packaging", {id: v.id}, v)
     return {status: 'done'}
 }
 
 export const linnGet = async () => {
-    let packaging = await getLinnQuery<{ Category: string, ID: string, Type: string, SKU: string }>(
-        `SELECT pg.PackageCategory   AS Category,
-                pg.PackageCategoryID AS ID,
-                pt.PackageTitle      AS Type,
+    let packaging = await getLinnQuery<{ name: string, id: string, type: string, SKU: string }>(
+        `SELECT pg.PackageCategory   AS name,
+                pg.PackageCategoryID AS id,
+                pt.PackageTitle      AS type,
                 si.ItemNumber        AS SKU
          FROM PackageGroups pg
                   INNER JOIN PackageTypes pt ON pg.PackageCategoryID = pt.PackageGroupID
@@ -48,17 +48,17 @@ export const linnGet = async () => {
     let data = packaging.Results
     let process = []
     for (let v in data) {
-        let pos = process.map(item=>{return item.ID}).indexOf(data[v].ID)
+        let pos = process.map(item=>{return item.id}).indexOf(data[v].id)
         if (pos === -1) {
             process.push({
-                ID: data[v].ID,
-                NAME: data[v].Category,
-                TYPE: data[v].Type,
-                LINKEDSKU: [data[v].SKU]
+                id: data[v].id,
+                name: data[v].name,
+                type: data[v].type,
+                linkedSkus: [data[v].SKU]
             })
         } else {
-            process[pos].LINKEDSKU.push(data[v].SKU)
-            process[pos].LINKEDSKU.sort()
+            process[pos].linkedSkus.push(data[v].SKU)
+            process[pos].linkedSkus.sort()
         }
     }
     return process
@@ -73,6 +73,6 @@ export class Packaging implements PackagingClass {
 
     find(id: string) {
         if (!this.packaging) return undefined
-        return this.packaging.find((p) => p.ID === id)
+        return this.packaging.find((p) => p.id === id)
     }
 }

@@ -38,6 +38,7 @@ export default async function GetLinnworksChannelPrices(
     for (let item of result) {
         const {linnId, Source, SubSource, Price, UpdateStatus, pkRowId} = item
         const channelPricesKey = Source.toLowerCase() as keyof sbt.Item["channelPrices"]
+        const newPrice = Math.round(parseFloat(Price) * 100)
 
         let mergeItem = merge.get(linnId)
 
@@ -46,30 +47,30 @@ export default async function GetLinnworksChannelPrices(
         mergeItem!.channelPrices ??= {
             amazon: {
                 id: "",
-                price: "",
+                price: 0,
                 status: 0,
                 subSource: "",
                 updateRequired: false,
                 updated: ""
             },
-            ebay: {id: "", price: "", status: 0, subSource: "", updateRequired: false, updated: ""},
-            magento: {id: "", price: "", status: 0, subSource: "", updateRequired: false, updated: ""},
-            shop: {price: "", status: 0}
+            ebay: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
+            magento: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
+            shop: {price: 0, status: 0}
         }
 
         let channelPriceData:sbt.ChannelPriceData = {
             id: pkRowId ? pkRowId : "",
             status: UpdateStatus ? Number(UpdateStatus) : 0,
             updateRequired: false,
-            price: Price,
+            price: newPrice,
             subSource: SubSource,
             updated: (new Date()).toString()
         }
 
         switch(Source.toLowerCase()){
-            case "amazon": if(mergeItem.prices.amazon !== parseFloat(Price)) channelPriceData.updateRequired = true; break;
-            case "ebay": if(mergeItem.prices.ebay !== parseFloat(Price)) channelPriceData.updateRequired = true; break;
-            case "magento": if(mergeItem.prices.magento !== parseFloat(Price)) channelPriceData.updateRequired = true; break;
+            case "amazon": if(mergeItem.prices.amazon !== newPrice) channelPriceData.updateRequired = true; break;
+            case "ebay": if(mergeItem.prices.ebay !== newPrice) channelPriceData.updateRequired = true; break;
+            case "magento": if(mergeItem.prices.magento !== newPrice) channelPriceData.updateRequired = true; break;
         }
 
         mergeItem.channelPrices[channelPricesKey] = channelPriceData

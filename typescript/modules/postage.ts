@@ -3,13 +3,11 @@ import {getPostalServices} from "./linnworks/api";
 
 export interface PostageData {
     _id?: { $oid: string };
-    POSTALFORMAT?: string;
-    POSTID: string;
-    VENDOR?: string;
-    POSTCOSTEXVAT: number;
-    SFORMAT?: string;
-    LINNSHIPPING?: string;
-    LASTUPDATE?: string;
+    format: string;
+    id: string;
+    vendor: string;
+    cost: number;
+    tag: string;
 }
 
 export interface PostageClass {
@@ -19,26 +17,32 @@ export interface PostageClass {
 }
 
 export const get = async () => {
-    return await find<PostageData>("Postage")
+    return await find<PostageData>("New-Postage")
 }
 
 export const update = async (data:PostageData) => {
     if (data._id !== undefined) delete data._id;
-    await setData("Postage", {POSTALFORMAT: data.POSTALFORMAT}, data)
+    await setData("New-Postage", {format: data.format}, data)
     return data
 }
 
 export const updateAll = async () => {
     console.log('Postage', 'Updating from Linnworks')
     const linnPostalServices = await getPostalServices()
+    const postage = await get()
+
     for (let service of linnPostalServices) {
         if (service.hasMappedShippingService) {
-            let postService = {
-                POSTALFORMAT: service.PostalServiceName,
-                POSTID: service.id,
-                VENDOR: service.Vendor
+            let existingService = postage?.find((p) => p.id === service.id)
+            let linnData = {
+                format: service.PostalServiceName,
+                id: service.id,
+                vendor: service.Vendor
             };
-            await setData("Postage", {POSTALFORMAT: postService.POSTALFORMAT}, postService)
+
+            let update = existingService ? {...existingService, ...linnData} : {...postageTemplate(), linnData};
+
+            await setData("New-Postage", {format: update.format}, update)
         }
     }
     return
@@ -61,6 +65,12 @@ export class Postage implements PostageClass {
 
     find(id: string) {
         if (!this.postage) return undefined
-        return this.postage.find((p) => p.POSTID === id)
+        return this.postage.find((p) => p.id === id)
+    }
+}
+
+function postageTemplate():PostageData{
+    return {
+        cost: 0, format: "", id: "", tag: "", vendor: ""
     }
 }
