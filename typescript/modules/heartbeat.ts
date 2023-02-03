@@ -104,6 +104,6 @@ const dbCleanUp = async () => {
     if(!result) return
 
     for (let value of result) {
-        if (skuList.indexOf(value.SKU) === -1) await deleteOne("Items", {SKU: value.SKU})
+        if (skuList.indexOf(value.SKU) === -1) await deleteOne("New-Items", {SKU: value.SKU})
     }
 }

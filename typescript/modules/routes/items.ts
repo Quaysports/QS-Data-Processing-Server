@@ -1,4 +1,5 @@
 import fs from "fs";
+const sharp = require('sharp');
 import {findOne, setData} from "../mongo-interface";
 import {updateLinnItem} from "../linnworks/api";
 
@@ -60,15 +61,22 @@ export async function uploadImages(file: { _id: string, SKU: string, id: string,
 
     let image = decodeBase64Image(file.image)
 
+    if(image.data === null){
+        console.error("No image data")
+        return
+    }
+
     if (image.error) {
         console.error(image.error)
         return
     }
 
+    let imageConversion = await sharp(image.data).jpeg().resize(2048 , 2048, {fit:"contain", background:{r:255,g:255,b:255}}).toBuffer();
+
     fs.readdir(path, function (err: Error | null, files: string[]) {
         console.log(path + " found!")
         if (!files) {
-            fs.writeFile(`${path}/${file.filename}`, image.data!, async () => {
+            fs.writeFile(`${path}/${file.filename}`, imageConversion, async () => {
                 if (err) console.log(err)
                 return await dbUpdateImage(dbImage)
             })
@@ -78,7 +86,7 @@ export async function uploadImages(file: { _id: string, SKU: string, id: string,
                     fs.unlinkSync(`${path}/${foundFile}`)
                 }
             }
-            fs.writeFile(`${path}/${file.filename}`, image.data!, async () => {
+            fs.writeFile(`${path}/${file.filename}`, imageConversion, async () => {
                 if (err) console.log(err)
                 return await dbUpdateImage(dbImage)
             })
@@ -87,16 +95,20 @@ export async function uploadImages(file: { _id: string, SKU: string, id: string,
 }
 export const deleteImage = async (id:keyof sbt.Item["images"], item:sbt.Item) => {
     console.log("id:", id)
-    console.dir(item,{depth:5})
-    const files = fs.readdirSync(`./images/${item.SKU}/`)
+    let files:string[] = []
+
+    try {
+        files = fs.readdirSync(`./images/${item.SKU}/`)
+    } catch (e) {
+        console.log({status: "No image or directory found"})
+    }
+
     if (files.indexOf(item.images[id].filename) !== -1) {
         if (item.images[id].link === "") fs.unlinkSync(`./images/${item.SKU}/${item.images[id].filename}`)
     }
-    const inventoryItemImages= {
-        [item.linnId]: [
-            item.images[id].url
-        ]
-    }
+
+    const inventoryItemImages= {[item.linnId]: [item.images[id].url]}
+
     console.log(inventoryItemImages)
     let res = await updateLinnItem('/api/Inventory/DeleteImagesFromInventoryItem', `inventoryItemImages=${JSON.stringify(inventoryItemImages)}`)
     console.log(res)

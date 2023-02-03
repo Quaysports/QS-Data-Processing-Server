@@ -90,6 +90,7 @@ declare namespace sbt {
         }
         //used to be CD is it dynamically generated and still used?
         channelData: ChannelData[]
+        channelReferenceData: ChannelReferenceData[]
         //used to be CHECK
         checkboxStatus: {
             stockForecast: {
@@ -216,6 +217,12 @@ declare namespace sbt {
         year: number;
         source: string;
         quantity: number;
+    }
+
+    interface ChannelReferenceData{
+        id: string;
+        SKU: string;
+        source: string;
     }
     interface ChannelPriceData {
         price: number;

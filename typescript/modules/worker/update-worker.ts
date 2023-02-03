@@ -7,6 +7,8 @@ import UpdateChannelData from "../update-worker-modules/update-channel-data";
 import GetLinnworksChannelPrices from "../update-worker-modules/get-linnworks-channel-prices";
 import {bulkUpdateItems} from "../mongo-interface";
 import UpdateLinnworksChannelPrices from "../update-worker-modules/update-linnworks-channel-prices";
+import {createChannelMessage} from "./worker-factory";
+import updateChannelReferences from "../update-worker-modules/update-channel-references";
 
 const {parentPort} = require("worker_threads")
 
@@ -34,9 +36,7 @@ parentPort.on("message", async (req: sbt.WorkerReq) => {
     }
 });
 
-const createChannelMessage = (req: sbt.WorkerReq, data = {}) => {
-    return {type: "data", id: req.id, msg: `${req.type} worker done`, data: data}
-}
+
 
 const runUpdateStockTotals = async (req: sbt.WorkerReq) => {
     const merge = await UpdateStockTotals(undefined, req.data.skus)
@@ -67,7 +67,9 @@ const runUpdateAll = async (req: sbt.WorkerReq) => {
 
     let channelDataMerge = await UpdateChannelData(suppliersMerge, req.data.skus)
 
-    let channelPricesMerge = await GetLinnworksChannelPrices(channelDataMerge, req.data.skus)
+    let channelReferenceMerge = await updateChannelReferences(channelDataMerge, req.data.skus)
+
+    let channelPricesMerge = await GetLinnworksChannelPrices(channelReferenceMerge, req.data.skus)
 
     let marginUpdateMerge = await UpdateMargins(channelPricesMerge, req.data.skus)
 

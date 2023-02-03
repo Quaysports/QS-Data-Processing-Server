@@ -1,10 +1,10 @@
 import {ping} from "./modules/mongo-interface";
 import config = require('./config.json')
 import * as HeartBeat from "./modules/heartbeat";
+import * as Orders from "./modules/orders/orders";
 import path from 'path'
 import express from 'express'
 import http from 'http'
-
 
 const app = express();
 app.use("/images", express.static(path.join(__dirname, "./images")));
@@ -17,6 +17,7 @@ http.createServer(app).listen(4000, async () => {
     console.log(`Server started`)
     // Heartbeat
     await HeartBeat.init()
+    await Orders.init();
 });
 
 const startSever = async () => {
@@ -57,5 +58,8 @@ const startSever = async () => {
 
     const marginRoutes = require('./routes/margin.js')
     app.use('/Margin/', marginRoutes)
+
+    const reportRoutes = require('./routes/reports.js')
+    app.use('/Reports/', reportRoutes)
 
 }

@@ -89,6 +89,7 @@ function itemTemplate(): sbt.Item {
     return {
         brandLabel: {brand: "", image: "", location: "", path: "", title1: "", title2: ""},
         channelData: [],
+        channelReferenceData: [],
         channelPrices: {
             amazon: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
             ebay: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
@@ -197,7 +198,7 @@ function itemTemplate(): sbt.Item {
     }
 }
 
-const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
+const updateItem = (item: sbt.Item, linnItem: SQLQuery):sbt.Item => {
     let baseItem = itemTemplate()
     let composite = linnItem.isComposite.toLowerCase() === 'true'
 
@@ -263,7 +264,8 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery) => {
             image9: {...baseItem.images.image9, ...item.images.image9},
             image10: {...baseItem.images.image10, ...item.images.image10},
             image11: {...baseItem.images.image11, ...item.images.image11},
-        }
+        },
+        channelReferenceData: [],
     }
 }
 
