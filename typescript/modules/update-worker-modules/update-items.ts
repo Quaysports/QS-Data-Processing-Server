@@ -226,7 +226,6 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery):sbt.Item => {
         item.weight = linnItem.weight ? parseFloat(linnItem.weight) : 0
     }
 
-    item.extendedProperties = {...baseItem.extendedProperties}
     if (linnItem.epName) {
         let extendedProperty: sbt.LinnExtendedProperty = {
             epName: linnItem.epName,
