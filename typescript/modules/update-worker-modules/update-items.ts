@@ -66,7 +66,7 @@ export default async function UpdateItems(skus?: string) {
     let merge = new Map<string, sbt.Item>()
 
     for (let item of linnData) {
-        let base = merge.get(item.linnId) ?? {...itemTemplate(), ...itemsFromDatabase.get(item.linnId)} ?? itemTemplate()
+        let base = merge.get(item.linnId) ?? itemsFromDatabase.get(item.linnId) ?? itemTemplate()
         if (!merge.has(item.linnId)) {
             base.prices.purchase = 0
             base.weight = 0
@@ -189,11 +189,16 @@ function itemTemplate(): sbt.Item {
             specialPrice: "",
             tariffCode: "9507",
             tillFilter: "",
-            tradePack: ""
+            tradePack: "",
+            age: "adult",
+            color: "",
+            gender: "unisex",
+            size: ""
         },
         packaging: {editable: false, group: "", items: [], lock: false},
         prices: {amazon: 0, ebay: 0, magento: 0, purchase: 0, retail: 0, shop: 0},
         title: "",
+        till: {color: "#ffffff"},
         weight: 0
     }
 }
@@ -221,6 +226,7 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery):sbt.Item => {
         item.weight = linnItem.weight ? parseFloat(linnItem.weight) : 0
     }
 
+    item.extendedProperties = {...baseItem.extendedProperties}
     if (linnItem.epName) {
         let extendedProperty: sbt.LinnExtendedProperty = {
             epName: linnItem.epName,
@@ -266,6 +272,10 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery):sbt.Item => {
             image11: {...baseItem.images.image11, ...item.images.image11},
         },
         channelReferenceData: [],
+        mappedExtendedProperties: {
+            ...baseItem.mappedExtendedProperties,
+            ...item.mappedExtendedProperties
+        }
     }
 }
 
@@ -366,6 +376,19 @@ function processExtendedProperties(item: sbt.Item, linnItem: SQLQuery) {
                     item.tags.push(convertedTag)
                 }
             }
+            break
         }
+        case "Color":
+            mapEp.color = epValue;
+            break
+        case "Size":
+            mapEp.size = epValue;
+            break
+        case "Gender":
+            mapEp.gender = epValue;
+            break
+        case "Age":
+            mapEp.age = epValue;
+            break
     }
 }

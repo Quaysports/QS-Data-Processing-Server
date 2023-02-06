@@ -162,6 +162,10 @@ declare namespace sbt {
             shippingFormat: string
             //used to be TILLFILTER
             tillFilter:string
+            color: string
+            gender: string
+            size: string
+            age: string
         }
         compositeItems: CompositeItems[]
         extendedProperties: LinnExtendedProperty[]
@@ -198,6 +202,9 @@ declare namespace sbt {
         linkedSKUS: string[]
         //move items from IDBFILTER into tags
         tags: string[]
+        till:{
+            color: string,
+        }
         brandLabel:{
             image: string,
             path: string,
