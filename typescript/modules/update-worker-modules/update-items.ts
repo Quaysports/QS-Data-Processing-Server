@@ -240,6 +240,7 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery):sbt.Item => {
     }
 
     return {
+        ...baseItem,
         ...item,
         SKU: linnItem.SKU,
         linnId: linnItem.linnId,
