@@ -189,11 +189,16 @@ function itemTemplate(): sbt.Item {
             specialPrice: "",
             tariffCode: "9507",
             tillFilter: "",
-            tradePack: ""
+            tradePack: "",
+            age: "adult",
+            color: "",
+            gender: "unisex",
+            size: ""
         },
         packaging: {editable: false, group: "", items: [], lock: false},
         prices: {amazon: 0, ebay: 0, magento: 0, purchase: 0, retail: 0, shop: 0},
         title: "",
+        till: {color: "#ffffff"},
         weight: 0
     }
 }
@@ -366,6 +371,19 @@ function processExtendedProperties(item: sbt.Item, linnItem: SQLQuery) {
                     item.tags.push(convertedTag)
                 }
             }
+            break
         }
+        case "Color":
+            mapEp.color = epValue;
+            break
+        case "Size":
+            mapEp.size = epValue;
+            break
+        case "Gender":
+            mapEp.gender = epValue;
+            break
+        case "Age":
+            mapEp.age = epValue;
+            break
     }
 }
