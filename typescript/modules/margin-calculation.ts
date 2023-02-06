@@ -210,5 +210,5 @@ const roundToNearest = (num: number):number => {
     if (decimalRound === 0) return whole + decimalRound - 1
     if (decimalRound > 90) return whole + 99
 
-    return whole + decimalRound
+    return Math.round(whole + decimalRound)
 }
