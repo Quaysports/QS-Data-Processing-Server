@@ -3,6 +3,7 @@ declare namespace sbt {
     type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
     interface Item {
+        test?: Boolean;
         _id?: string
         EAN: string
         isComposite: boolean

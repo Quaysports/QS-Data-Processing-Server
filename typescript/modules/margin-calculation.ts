@@ -18,7 +18,7 @@ export default async function ProcessMargins(item: sbt.Item, Fees: FeesClass, Pa
     await getMagentoListingCosts(item, Fees);
     await getEbayListingCosts(item, Fees);
     await getShopListingCosts(item, Fees);
-    await getLastYearChannelProfits(item);
+    if(!item.test) await getLastYearChannelProfits(item);
     return
 }
 
