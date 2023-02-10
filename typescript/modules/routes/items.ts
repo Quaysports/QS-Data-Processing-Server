@@ -14,7 +14,7 @@ const dbUpdateImage = async (item: DbImage) => {
 
     let result = await findOne<sbt.Item>("New-Items", {SKU: item.SKU}, {images: 1})
     if (result) {
-        await setData("New-Items", {SKU: item.SKU}, {...result, ...item})
+        await setData("New-Items", {SKU: item.SKU}, {...result, images:{...result.images, ...item.images}})
         return {status:"done"}
     } else {
         return {status:"not found"}
