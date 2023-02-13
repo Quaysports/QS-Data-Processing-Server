@@ -34,3 +34,13 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
+    
+    - name: Install SSH Key
+      uses: shimataro/ssh-key-action@v2.5.0
+      with: 
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        name: id_ed25519
+        known_hosts: ${{secrets.SSH_KNOWN_HOSTS}}
+    - name: Restart Data-Server
+      run: sudo systemctl restart data-server.service
+    
