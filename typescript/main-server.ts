@@ -1,5 +1,4 @@
 import {ping} from "./modules/mongo-interface";
-import Config from "./config"
 import * as HeartBeat from "./modules/heartbeat";
 import * as Orders from "./modules/orders/orders";
 import itemRoutes from './routes/items';
@@ -25,7 +24,7 @@ http.createServer(app).listen(4000, async () => {
 
 const startSever = async () => {
     console.log("Server starting")
-
+    console.log(process.env.DBNAME)
     // express text parser maximums (to allow handling of large JSON text strings)
     app.use(express.json({limit: '5mb'}));
     app.use(express.urlencoded({limit: '5mb', extended: true}));
@@ -48,7 +47,7 @@ const startSever = async () => {
 
     app.use((req, res, next) => {
         let token = req.headers.token?.toString() as "" | undefined
-        token && Config.tokens[token] ? next() : res.sendStatus(403)
+        token && token === process.env.TOKEN ? next() : res.sendStatus(403)
     })
 
     console.log("Mongo Ping: ", await ping())

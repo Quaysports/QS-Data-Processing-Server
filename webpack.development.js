@@ -1,5 +1,6 @@
 const path = require('path');
 const NodemonPlugin = require('nodemon-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     entry: {
@@ -15,6 +16,7 @@ module.exports = {
     },
     plugins: [
         new NodemonPlugin(),
+        new Dotenv(),
     ],
     module: {
         rules: [
