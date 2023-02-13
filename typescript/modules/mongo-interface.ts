@@ -1,9 +1,9 @@
 "use strict";
-import * as mongoDB from 'mongodb'
+import {AnyBulkWriteOperation, MongoClient, Document} from 'mongodb'
 
 export const connect = async () => {
   if(process.env.DBURL) {
-    return await new mongoDB.MongoClient(process.env.DBURL).connect()
+    return await new MongoClient(process.env.DBURL).connect()
   } else {
     throw new Error('No DBURL found in environment variables')
   }
@@ -51,7 +51,7 @@ export const unsetData = async (collection: string, filter: object, data: object
 }
 export const bulkUpdateItems = async (merge: Map<string, sbt.AtLeast<sbt.Item, 'SKU'>>) => {
   const client = await connect()
-  let bulkUpdateOps: mongoDB.AnyBulkWriteOperation<mongoDB.Document>[][] = []
+  let bulkUpdateOps: AnyBulkWriteOperation<Document>[][] = []
   let index = 0
   let counter = 0;
 
@@ -62,7 +62,7 @@ export const bulkUpdateItems = async (merge: Map<string, sbt.AtLeast<sbt.Item, '
     bulkUpdateOps[index].push({
       updateOne: {
         filter: updateQuery,
-        update: { $set: item as mongoDB.Document },
+        update: { $set: item as Document },
         upsert: true
       }
     });
@@ -92,9 +92,9 @@ export const bulkUpdateItems = async (merge: Map<string, sbt.AtLeast<sbt.Item, '
   return { status: `BulkUpdated ${updatedItems} items` };
 }
 
-export const bulkUpdateAny = async (collection: string, arr: mongoDB.Document[], updateKey: string) => {
+export const bulkUpdateAny = async (collection: string, arr: Document[], updateKey: string) => {
   const client = await connect()
-  let bulkUpdateOps: mongoDB.AnyBulkWriteOperation<mongoDB.Document>[][] = []
+  let bulkUpdateOps: AnyBulkWriteOperation[][] = []
   let index = 0
   let counter = 0;
 
@@ -134,7 +134,7 @@ export const bulkUpdateAny = async (collection: string, arr: mongoDB.Document[],
   return { status: `BulkUpdated ${updatedItems} items` };
 }
 
-export const find = async <T extends mongoDB.Document>(collection: string, filter = {}, projection = {}, sort = {}, limit = 20000) => {
+export const find = async <T extends Document>(collection: string, filter = {}, projection = {}, sort = {}, limit = 20000) => {
   const client = await connect()
   try {
     const db = client.db(process.env.DBNAME);
@@ -146,7 +146,7 @@ export const find = async <T extends mongoDB.Document>(collection: string, filte
   }
 }
 
-export const findAggregate = async <T extends mongoDB.Document>(collection: string, aggregate: object[]) => {
+export const findAggregate = async <T extends Document>(collection: string, aggregate: object[]) => {
   const client = await connect()
   try {
     const db = client.db(process.env.DBNAME);

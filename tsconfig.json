@@ -18,10 +18,5 @@
       "images",
       "login",
       "website-images"
-  ],
-  "typedocOptions": {
-    "entryPoints": ["./typescript"],
-    "entryPointStrategy": "expand",
-    "out": "docs"
-  }
+  ]
 }
