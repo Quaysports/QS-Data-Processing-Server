@@ -18,6 +18,7 @@ http.createServer(app).listen(4000, async () => {
     await startSever()
     console.log(`Server started on: 4000!`)
     // Heartbeat
+    //test
     await HeartBeat.init()
     await Orders.init();
 });
