@@ -17,7 +17,7 @@ app.disable('x-powered-by')
 http.createServer(app).listen(4000, async () => {
     console.log(`HTTP server listening`)
     await startSever()
-    console.log(`Server started on: 4000`)
+    console.log(`Server started on: 4000!`)
     // Heartbeat
     await HeartBeat.init()
     await Orders.init();
