@@ -42,5 +42,5 @@ jobs:
         name: id_ed25519
         known_hosts: ${{secrets.SSH_KNOWN_HOSTS}}
     - name: Restart Data-Server
-      run: sudo systemctl restart data-server.service
+      run: ssh ${{secrets.SERVER_ADDRESS}} -p ${{secrets.SERVER_PORT}} sudo systemctl restart data-server.service
     
