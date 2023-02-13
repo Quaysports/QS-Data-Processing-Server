@@ -1,7 +1,10 @@
 import {ping} from "./modules/mongo-interface";
-import config = require('./config.json')
+import Config from "./config"
 import * as HeartBeat from "./modules/heartbeat";
 import * as Orders from "./modules/orders/orders";
+import itemRoutes from './routes/items';
+import marginRoutes from './routes/margin';
+import reportRoutes from './routes/reports';
 import path from 'path'
 import express from 'express'
 import http from 'http'
@@ -14,7 +17,7 @@ app.disable('x-powered-by')
 http.createServer(app).listen(4000, async () => {
     console.log(`HTTP server listening`)
     await startSever()
-    console.log(`Server started`)
+    console.log(`Server started on: 4000`)
     // Heartbeat
     await HeartBeat.init()
     await Orders.init();
@@ -35,7 +38,9 @@ const startSever = async () => {
 
     //CORS filtering
     app.use(function (req, res, next) {
-        if (req.headers.origin) { res.setHeader('Access-Control-Allow-Origin', req.headers.origin) }
+        if (req.headers.origin) {
+            res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+        }
         res.header("Access-Control-Allow-Credentials", "true")
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization, token");
         next();
@@ -43,7 +48,7 @@ const startSever = async () => {
 
     app.use((req, res, next) => {
         let token = req.headers.token?.toString() as "" | undefined
-        token && config.tokens[token] ? next() : res.sendStatus(403)
+        token && Config.tokens[token] ? next() : res.sendStatus(403)
     })
 
     console.log("Mongo Ping: ", await ping())
@@ -53,13 +58,7 @@ const startSever = async () => {
         res.send(await ping())
     });
 
-    const itemRoutes = require('./routes/items.js')
     app.use('/Items/', itemRoutes)
-
-    const marginRoutes = require('./routes/margin.js')
     app.use('/Margin/', marginRoutes)
-
-    const reportRoutes = require('./routes/reports.js')
     app.use('/Reports/', reportRoutes)
-
 }

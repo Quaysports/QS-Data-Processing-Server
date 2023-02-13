@@ -1,9 +1,8 @@
-import mongoI = require("../mongo-interface");
 import Auth from "../linnworks/auth";
-
 import GetLinnworksChannelPrices from "./get-linnworks-channel-prices";
 import {updateLinnItem} from "../linnworks/api"
 import {GUID} from "../utilities";
+import {bulkUpdateItems, findAggregate} from "../mongo-interface";
 
 export default async function UpdateLinnworksChannelPrices(
     merge: Map<string, sbt.Item> = new Map<string, sbt.Item>(), data?: sbt.Item[]
@@ -15,17 +14,17 @@ export default async function UpdateLinnworksChannelPrices(
     }, "") : ""
 
     await Auth(true)
-    await mongoI.bulkUpdateItems(await GetLinnworksChannelPrices(undefined, skuList))
+    await bulkUpdateItems(await GetLinnworksChannelPrices(undefined, skuList))
 
-    let amazonQuery = await mongoI.findAggregate<QueryResult>(
+    let amazonQuery = await findAggregate<QueryResult>(
         "New-Items",
         generateAggrigationQuery("amazon", argSkuList)
     )
-    let ebayQuery = await mongoI.findAggregate<QueryResult>(
+    let ebayQuery = await findAggregate<QueryResult>(
         "New-Items",
         generateAggrigationQuery("ebay", argSkuList)
     )
-    let magentoQuery = await mongoI.findAggregate<QueryResult>(
+    let magentoQuery = await findAggregate<QueryResult>(
         "New-Items",
         generateAggrigationQuery("magento", argSkuList)
     )
@@ -57,7 +56,7 @@ export default async function UpdateLinnworksChannelPrices(
 
     await batchUpdateFromMap(updates)
 
-    await mongoI.bulkUpdateItems(await GetLinnworksChannelPrices(merge, skuList))
+    await bulkUpdateItems(await GetLinnworksChannelPrices(merge, skuList))
 
     return {status: "done!"}
 

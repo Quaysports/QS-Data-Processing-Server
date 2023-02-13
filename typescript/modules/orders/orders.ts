@@ -1,6 +1,6 @@
-import Linn = require('../linnworks/api');
 import {findOne, setData} from "../mongo-interface";
 import {processOrders} from "./process-orders";
+import {getLinnQuery} from "../linnworks/api";
 
 export interface LinnOrdersSQLResult{
     name: string
@@ -124,7 +124,7 @@ export const linnGet = async () => {
     let sqlDate = new Date(queryDate.lastUpdate)
     let sqlDateString = sqlDate.toISOString().slice(0, 19).toString().replace('T', ' ')
 
-    let qResult = await Linn.getLinnQuery<LinnOrdersSQLResult>(
+    let qResult = await getLinnQuery<LinnOrdersSQLResult>(
         `SELECT 
                 o.cFullName AS 'name', 
                 o.cEmailAddress AS 'email', 

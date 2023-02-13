@@ -1,5 +1,6 @@
 import Thread from "worker_threads"
 import EventEmitter from 'events'
+import path from "path"
 
 let events = new Map<string, EventEmitter>()
 
@@ -43,10 +44,10 @@ function spawnWorker(type: string, eventId: string) {
 
     switch (type) {
         case "reports":
-            workerPath = `./modules/worker/reports-worker.js`;
+            workerPath = path.resolve(__dirname, 'reports-worker.js');
             break
         case "update":
-            workerPath = `./modules/worker/update-worker.js`;
+            workerPath = path.resolve(__dirname, 'update-worker.js');
             break
         default:
             workerPath = undefined;

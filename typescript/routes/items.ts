@@ -1,36 +1,43 @@
 import fs from "fs";
 import {deleteImage, uploadImages} from "../modules/routes/items";
-import express = require('express')
+import * as express from 'express'
 import {postToWorker} from "../modules/worker/worker-factory";
 
-const router = express.Router()
-router.post('/GetBrandLabelImages', async (req, res) => {
+
+const itemsRoutes = express.Router()
+itemsRoutes.post('/GetBrandLabelImages', async (req, res) => {
     const data = fs.readdirSync("./brand-label-images")
     res.send(data || [])
 })
 
-router.post('/UploadImages', async (req, res) => {
+itemsRoutes.post('/UploadImages', async (req, res) => {
     /*
     * Req body obj: {_id:mongodb id, SKU:item.SKU, id:db image id, filename: index, image: image base64}
      */
     res.send(await uploadImages(req.body))
 })
 
-router.post('/UpdateAll', async (req, res) => {
+itemsRoutes.post('/UpdateAll', async (req, res) => {
     await postToWorker("update",
-        {msg: "", reqId: "", type: "updateAll", data:{}, id: new Date().getTime().toString()}
+        {msg: "", reqId: "", type: "updateAll", data: {}, id: new Date().getTime().toString()}
     )
-    res.send({ status: 'done' })
+    res.send({status: 'done'})
 })
 
-router.post('/UpdateLinnworksChannelPrices', async (req, res) => {
+itemsRoutes.post('/UpdateLinnworksChannelPrices', async (req, res) => {
     await postToWorker("update",
-        { type: "updateLinnChannelPrices", msg: "", reqId: "", data: { items:req.body.items }, id: new Date().getTime().toString() }
+        {
+            type: "updateLinnChannelPrices",
+            msg: "",
+            reqId: "",
+            data: {items: req.body.items},
+            id: new Date().getTime().toString()
+        }
     )
-    res.send({ status: 'done' })
+    res.send({status: 'done'})
 })
-router.post('/DeleteImage', async (req, res)=> {
+itemsRoutes.post('/DeleteImage', async (req, res) => {
     res.send(await deleteImage(req.body.id, req.body.item))
 })
 
-export = router
+export default itemsRoutes

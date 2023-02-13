@@ -1,8 +1,8 @@
-import mongoI = require('../mongo-interface')
+import {bulkUpdateItems, find} from "../mongo-interface";
 
 export async function unHideAll() {
 
-    let items = await mongoI.find<sbt.Item>(
+    let items = await find<sbt.Item>(
         "Items",
         {"checkboxStatus.marginCalculator.hide": true},
         {SKU: 1, checkboxStatus: 1})
@@ -15,14 +15,14 @@ export async function unHideAll() {
 
     const itemsMap: Map<string, sbt.Item> = new Map(items.map(item => [item.SKU, item]))
 
-    let result = await mongoI.bulkUpdateItems(itemsMap)
+    let result = await bulkUpdateItems(itemsMap)
 
     console.log(result)
 }
 
 export async function removeOverrides() {
     console.log("remove overrides!")
-    let items = await mongoI.find<sbt.Item>(
+    let items = await find<sbt.Item>(
         "Items",
         {
             $or: [
@@ -48,7 +48,7 @@ export async function removeOverrides() {
 
     const itemsMap: Map<string, sbt.Item> = new Map(items.map(item => [item.SKU, item]))
 
-    let result = await mongoI.bulkUpdateItems(itemsMap)
+    let result = await bulkUpdateItems(itemsMap)
 
     console.log(result)
 }

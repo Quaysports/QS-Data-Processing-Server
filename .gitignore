@@ -1,12 +1,11 @@
-/main-server.js
 /package-lock.json
 /.env
 /node_modules/
-/modules/
 /typescript/Heartbeat.http
 /.idea/
-/config.json
+/config.ts
 /typescript/config.json
 /images/
 /brand-label-images/
-/routes/
+/typescript/config.ts
+/dist/

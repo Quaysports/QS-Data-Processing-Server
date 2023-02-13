@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
     "esModuleInterop": true,
     "target": "es2021",
     "types": ["node"],
-    "sourceMap": false,
+    "sourceMap": true,
     "rootDir": "./typescript",
-    "outDir": ".",
+    "outDir": "./dist/",
     "strict": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true
   },
   "exclude": [

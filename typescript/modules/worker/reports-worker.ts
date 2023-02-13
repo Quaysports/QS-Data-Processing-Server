@@ -1,22 +1,21 @@
 import {createChannelMessage} from "./worker-factory";
 import {find} from "../mongo-interface";
 import {OnlineOrder} from "../orders/orders";
+import {parentPort} from "worker_threads";
 
-const {parentPort} = require("worker_threads")
-
-parentPort.on("message", async (req: sbt.WorkerReq) => {
-    parentPort.postMessage({msg: `${req.type} Update Worker Started!`});
+parentPort!.on("message", async (req: sbt.WorkerReq) => {
+    parentPort!.postMessage({msg: `${req.type} Update Worker Started!`});
     switch (req.type) {
         case "online-sales":
-            return parentPort.postMessage(
-                createChannelMessage(req, await onlineSalesReport(req))
+            return parentPort!.postMessage(
+                createChannelMessage(req, await onlineSalesReport())
             );
         default:
-            return parentPort.postMessage({msg: "No Update Worker Type Found!", type:"error"});
+            return parentPort!.postMessage({msg: "No Update Worker Type Found!", type:"error"});
     }
 });
 
-async function onlineSalesReport(req: sbt.WorkerReq){
+async function onlineSalesReport(){
     //get date 3am three days ago
     let date = new Date()
     date.setDate(date.getDate() - 3)

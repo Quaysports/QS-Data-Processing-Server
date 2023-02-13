@@ -9,34 +9,31 @@ import {bulkUpdateItems} from "../mongo-interface";
 import UpdateLinnworksChannelPrices from "../update-worker-modules/update-linnworks-channel-prices";
 import {createChannelMessage} from "./worker-factory";
 import updateChannelReferences from "../update-worker-modules/update-channel-references";
+import {parentPort} from "worker_threads"
 
-const {parentPort} = require("worker_threads")
-
-parentPort.on("message", async (req: sbt.WorkerReq) => {
-    parentPort.postMessage({msg: `${req.type} Update Worker Started!`});
+parentPort!.on("message", async (req: sbt.WorkerReq) => {
+    parentPort!.postMessage({msg: `${req.type} Update Worker Started!`});
     switch (req.type) {
         case "stockTotal":
-            return parentPort.postMessage(
+            return parentPort!.postMessage(
                 createChannelMessage(req, await runUpdateStockTotals(req))
             );
         case "channelPrices":
-            return parentPort.postMessage(
+            return parentPort!.postMessage(
                 createChannelMessage(req, await runChannelPrices(req))
             )
         case "updateLinnChannelPrices":
-            return parentPort.postMessage(
+            return parentPort!.postMessage(
                 createChannelMessage(req, await runUpdateLinnChannelPrices(req))
             )
         case "updateAll":
-            return parentPort.postMessage(
+            return parentPort!.postMessage(
                 createChannelMessage(req, await runUpdateAll(req))
             )
         default:
-            return parentPort.postMessage({msg: "No Update Worker Type Found!", type:"error"});
+            return parentPort!.postMessage({msg: "No Update Worker Type Found!", type:"error"});
     }
 });
-
-
 
 const runUpdateStockTotals = async (req: sbt.WorkerReq) => {
     const merge = await UpdateStockTotals(undefined, req.data.skus)

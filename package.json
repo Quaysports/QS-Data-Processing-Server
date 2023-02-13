@@ -2,23 +2,34 @@
   "name": "quaysports-server",
   "version": "2.0.0",
   "description": "",
-  "main": "./main-server.js",
+  "private": true,
   "dependencies": {
+    "@types/sharp": "^0.31.1",
     "cron": "^1.3.0",
     "dotenv": "^16.0.3",
     "express": "^4.17.1",
     "ftp": "^0.3.10",
     "mongodb": "^4.8.1",
-    "sharp": "^0.31.3"
+    "sharp": "^0.31.3",
+    "snappy": "^7.2.2"
   },
   "scripts": {
-    "start": "tsc && node main-server"
+    "dev": "webpack --config webpack.development.js --watch --progress --color",
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/express": "^4.17.13",
+    "@types/express": "^4.17.17",
+    "nodemon": "^2.0.20",
+    "nodemon-webpack-plugin": "^4.8.1",
+    "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
-    "typescript": "^4.6.3"
+    "typescript": "^4.9.5",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }

@@ -1,5 +1,5 @@
 import fs from "fs";
-const sharp = require('sharp');
+import sharp from "sharp";
 import {findOne, setData} from "../mongo-interface";
 import {updateLinnItem} from "../linnworks/api";
 
@@ -24,6 +24,7 @@ const dbUpdateImage = async (item: DbImage) => {
 export async function uploadImages(file: { _id: string, SKU: string, id: string, filename: string, image: string }) {
 
     const makeImagesFolder = async () => {
+
         if (!fs.existsSync('./images')) await fs.mkdirSync("./images")
         return './images'
     }
