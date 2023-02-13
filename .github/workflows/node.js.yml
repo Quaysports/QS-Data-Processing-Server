@@ -12,7 +12,7 @@ on:
 env:
   DBURL: ${{vars.DBURL}}
   DBNAME: ${{vars.DBNAME}}
-  TOKEN: ${{vars.TOKEN}}
+  TOKEN: ${{secrets.TOKEN}}
   
 jobs:
   build:
