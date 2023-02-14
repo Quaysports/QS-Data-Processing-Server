@@ -21,7 +21,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     
     steps:
@@ -46,4 +46,3 @@ jobs:
       run: rsync -r ./dist sbt:QS-Data-Processing-Server/
     - name: Restart Data-Server
       run: ssh sbt sudo systemctl restart data-server.service
-    
