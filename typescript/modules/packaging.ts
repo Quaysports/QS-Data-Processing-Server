@@ -65,7 +65,7 @@ export const linnGet = async () => {
 }
 export class Packaging implements PackagingClass {
 
-    constructor(packaging: PackagingData[] | undefined) {
+    constructor(packaging: PackagingData[] | undefined = undefined) {
         this.packaging = packaging
     }
 

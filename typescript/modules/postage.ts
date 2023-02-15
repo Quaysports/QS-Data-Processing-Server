@@ -57,7 +57,7 @@ export const remove = async (data:PostageData) => {
 
 export class Postage implements PostageClass {
 
-    constructor(postage: PostageData[] | undefined) {
+    constructor(postage: PostageData[] | undefined = undefined) {
         this.postage = postage;
     }
 

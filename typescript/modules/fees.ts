@@ -45,7 +45,7 @@ export interface FeesClass {
 
 export class Fees implements FeesClass {
 
-    constructor(fees: FeesData | undefined) {
+    constructor(fees: FeesData | undefined  = undefined) {
         this.fd = fees
     }
 
