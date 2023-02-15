@@ -44,5 +44,11 @@ jobs:
         config: ${{ secrets.SSH_CONFIG }}
     - name: Rsync .dist files
       run: rsync -r ./dist sbt:QS-Data-Processing-Server/
+    - name: Rsync package.json
+      run: rsync ./package.json sbt:QS-Data-Processing-Server/
+    - name: Rsync package-lock.json
+      run: rsync ./package-lock.json sbt:QS-Data-Processing-Server/
+    - name: update dependencies
+      run: ssh sbt cd QS-Data-Processing-Server/ && npm ci
     - name: Restart Data-Server
       run: ssh sbt sudo systemctl restart data-server.service
