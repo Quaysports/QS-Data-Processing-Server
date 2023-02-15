@@ -2,6 +2,16 @@ import Auth from "../linnworks/auth";
 import {getLinnQuery} from "../linnworks/api";
 import {getItemsFromDB} from "./update-items";
 
+export interface SQLQuery {
+    ItemNumber: string,
+    linnId: string,
+    Source:"amazon" | "ebay" | "magento",
+    SubSource:string,
+    Price:string,
+    UpdateStatus:string,
+    pkRowId:string
+}
+
 export default async function GetLinnworksChannelPrices(
     merge:undefined | Map<string,sbt.Item> = undefined, skus?:string
 ) {
@@ -10,16 +20,6 @@ export default async function GetLinnworksChannelPrices(
     console.log(new Date())
 
     if(!merge) { merge = await getItemsFromDB(skus) }
-
-    interface SQLQuery {
-        ItemNumber: string,
-        linnId: string,
-        Source:"amazon" | "ebay" | "magento",
-        SubSource:string,
-        Price:string,
-        UpdateStatus:string,
-        pkRowId:string
-    }
 
     let query = `SELECT si.pkStockItemId as linnId,
                         sp.Source,
