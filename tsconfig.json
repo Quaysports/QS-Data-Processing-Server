@@ -2,16 +2,16 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "target": "es2021",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "sourceMap": true,
     "rootDir": "./typescript",
     "outDir": "./dist/",
     "strict": true,
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
   "exclude": [
-      "tests",
       "node_modules",
       ".idea",
       "brand-label-images",

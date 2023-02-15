@@ -45,7 +45,7 @@ const getPostageAndPackaging = async (item: sbt.Item, Packaging: PackagingClass,
     }
 
     let packaging = await Packaging.find(item.packaging.group)
-    item.marginData.packaging = packaging?.price || 0.1
+    item.marginData.packaging = packaging?.price || 10
 }
 
 const getAmazonListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
@@ -57,6 +57,7 @@ const getAmazonListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
 
     if (!item.prices.amazon) {
         item.marginData.amazon.profit = 0;
+        item.marginData.amazon.primeProfit = 0;
         return
     } else {
         item.marginData.amazon.fees = Fees.calc('amazon', item.prices.amazon)

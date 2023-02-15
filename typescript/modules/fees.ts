@@ -1,6 +1,6 @@
 import {findOne, setData} from "./mongo-interface";
 
-interface FeesData {
+export interface FeesData {
     _id?: { $oid: string };
     listing: Channels;
     flat: Channels
@@ -44,6 +44,10 @@ export interface FeesClass {
 }
 
 export class Fees implements FeesClass {
+
+    constructor(fees: FeesData | undefined) {
+        this.fd = fees
+    }
 
     async initialize() {
         await get().then((data) => this.fd = data)

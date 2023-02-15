@@ -36,22 +36,9 @@ export const setData = async (collection: string, filter: object, data: object) 
   }
 }
 
-export const unsetData = async (collection: string, filter: object, data: object) => {
-  const client = await connect()
-  try {
-    const db = client.db(process.env.DBNAME);
-    const result = await db.collection(collection).updateOne(filter, { $unset: data })
-    console.log(`${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`);
-    return result;
-  } catch (e) {
-    console.error(e)
-  } finally {
-    await client.close()
-  }
-}
 export const bulkUpdateItems = async (merge: Map<string, sbt.AtLeast<sbt.Item, 'SKU'>>) => {
   const client = await connect()
-  let bulkUpdateOps: AnyBulkWriteOperation<Document>[][] = []
+  let bulkUpdateOps: AnyBulkWriteOperation[][] = []
   let index = 0
   let counter = 0;
 
