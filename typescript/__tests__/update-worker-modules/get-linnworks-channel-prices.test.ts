@@ -3,6 +3,7 @@ import {itemTemplate} from "../../__mocks__/item-template";
 
 let mockLinnData: SQLQuery[]
 beforeEach(() => {
+    jest.clearAllMocks()
     mockLinnData = [
         {
             ItemNumber: "123",

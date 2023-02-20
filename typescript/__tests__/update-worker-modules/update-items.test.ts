@@ -107,10 +107,10 @@ jest.mock("../../modules/linnworks/api", () => ({
 }))
 
 let mockItemsFromDBReturn = new Map([["123", {...itemTemplate(), linnId: "123"}]])
-jest.spyOn(source, "getItemsFromDB").mockReturnValue(Promise.resolve(structuredClone(mockItemsFromDBReturn)))
 
 describe("Update Items", () => {
     test("Linnworks auth gets called", async () => {
+        jest.spyOn(source, "getItemsFromDB").mockReturnValue(Promise.resolve(structuredClone(mockItemsFromDBReturn)))
         await source.default()
         expect(linnQueryMock).toBeCalled()
     })
