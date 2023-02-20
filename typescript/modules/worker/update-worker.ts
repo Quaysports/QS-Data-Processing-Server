@@ -8,7 +8,7 @@ import GetLinnworksChannelPrices from "../update-worker-modules/get-linnworks-ch
 import {bulkUpdateItems} from "../mongo-interface";
 import UpdateLinnworksChannelPrices from "../update-worker-modules/update-linnworks-channel-prices";
 import {createChannelMessage} from "./worker-factory";
-import updateChannelReferences from "../update-worker-modules/update-channel-references";
+import UpdateChannelReferences from "../update-worker-modules/update-channel-references";
 import {parentPort} from "worker_threads"
 
 parentPort!.on("message", async (req: sbt.WorkerReq) => {
@@ -64,7 +64,7 @@ const runUpdateAll = async (req: sbt.WorkerReq) => {
 
     let channelDataMerge = await UpdateChannelData(suppliersMerge, req.data.skus)
 
-    let channelReferenceMerge = await updateChannelReferences(channelDataMerge, req.data.skus)
+    let channelReferenceMerge = await UpdateChannelReferences(channelDataMerge, req.data.skus)
 
     let channelPricesMerge = await GetLinnworksChannelPrices(channelReferenceMerge, req.data.skus)
 

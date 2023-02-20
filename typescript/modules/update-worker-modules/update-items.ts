@@ -2,7 +2,7 @@ import Auth from "../linnworks/auth";
 import {getLinnQuery} from "../linnworks/api";
 import {find} from "../mongo-interface";
 
-interface SQLQuery {
+export interface SQLQuery {
     linnId: string,
     SKU: string,
     title: string,
@@ -145,14 +145,13 @@ function itemTemplate(): sbt.Item {
             postage: 0,
             shop: {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
             totalProfitLastYear: 0
-
         },
         marginNote: "",
         onOrder: [],
         postage: {id: "", modifier: "", price: 0},
         shelfLocation: {letter: "", number: "", prefix: ""},
         shortDescription: "",
-        stock: {checkedDate: "", default: 0, minimum: 0, total: 0, value: 0, warehouse: 0},
+        stock: {checkedDate: "", default: 0, minimum: 0, total: 0, value: 0, warehouse: 0, tradePack:undefined},
         stockTake: {checked: false, date: undefined, quantity: 0},
         stockHistory: [],
         supplier: "",
@@ -270,6 +269,10 @@ const updateItem = (item: sbt.Item, linnItem: SQLQuery):sbt.Item => {
             image9: {...baseItem.images.image9, ...item.images.image9},
             image10: {...baseItem.images.image10, ...item.images.image10},
             image11: {...baseItem.images.image11, ...item.images.image11},
+        },
+        stock: {
+            ...baseItem.stock,
+            ...item.stock
         },
         channelReferenceData: [],
         mappedExtendedProperties: {
