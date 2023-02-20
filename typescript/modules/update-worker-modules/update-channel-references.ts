@@ -2,7 +2,15 @@ import Auth from "../linnworks/auth";
 import {getLinnQuery} from "../linnworks/api";
 import {getItemsFromDB} from "./update-items";
 
-export default async function updateChannelReferences(
+export interface SQLQuery {
+    linnId: string,
+    source: "AMAZON" | "EBAY" | "MAGENTO",
+    subSource: string,
+    channelReferenceId:string,
+    channelSKU:string
+}
+
+export default async function UpdateChannelReferences(
     merge:undefined | Map<string,sbt.Item> = undefined, skus?:string
 ) {
     await Auth(true)
@@ -10,14 +18,6 @@ export default async function updateChannelReferences(
     console.log(new Date())
 
     if(!merge) { merge = await getItemsFromDB(skus) }
-
-    interface SQLQuery {
-        linnId: string,
-        source: "AMAZON" | "EBAY" | "MAGENTO",
-        subSource: string,
-        channelReferenceId:string,
-        channelSKU:string
-    }
 
     let query = `SELECT si.pkStockItemId as linnId,
                     sc.source,

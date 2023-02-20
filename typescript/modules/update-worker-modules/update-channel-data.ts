@@ -1,6 +1,7 @@
 import Auth from "../linnworks/auth";
 import {getLinnQuery} from "../linnworks/api";
 
+export interface SQLQuery {linnId:string, YEAR:number, SOURCE:string, QTY:string}
 export default async function UpdateChannelData(
     merge = (new Map<string, sbt.Item>()), skus?:string
 ) {
@@ -48,8 +49,6 @@ export default async function UpdateChannelData(
         SELECT *
         FROM @Results`
     }
-
-    interface SQLQuery {linnId:string, YEAR:number, SOURCE:string, QTY:string}
 
     const result = (await getLinnQuery<SQLQuery>(queryString(year, skus))).Results
 
