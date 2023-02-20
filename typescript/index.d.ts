@@ -76,7 +76,7 @@ declare namespace sbt {
             value: number
             //map from INVCHECKDATE
             checkedDate: string
-            tradePack: number | undefined
+            tradePack: number | null
         }
         stockTake:StockTake
         onOrder:OnOrder[]

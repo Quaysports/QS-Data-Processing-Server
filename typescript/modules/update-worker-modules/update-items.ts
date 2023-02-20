@@ -151,7 +151,7 @@ function itemTemplate(): sbt.Item {
         postage: {id: "", modifier: "", price: 0},
         shelfLocation: {letter: "", number: "", prefix: ""},
         shortDescription: "",
-        stock: {checkedDate: "", default: 0, minimum: 0, total: 0, value: 0, warehouse: 0, tradePack:undefined},
+        stock: {checkedDate: "", default: 0, minimum: 0, total: 0, value: 0, warehouse: 0, tradePack:null},
         stockTake: {checked: false, date: undefined, quantity: 0},
         stockHistory: [],
         supplier: "",
