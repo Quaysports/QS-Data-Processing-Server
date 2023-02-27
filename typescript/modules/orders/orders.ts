@@ -115,7 +115,7 @@ export interface Scanned { min: number; correct: boolean; max: number; scaleWeig
 
 export const init = async () => {
     await linnGet()
-    setInterval(() => { linnGet() }, 180000)
+    //setInterval(() => { linnGet() }, 180000)
 }
 
 export const linnGet = async () => {
