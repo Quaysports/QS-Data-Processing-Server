@@ -32,7 +32,7 @@ export const processOrders = async (data: LinnOrdersSQLResult[]) => {
                     region: item.region || "",
                     town: item.town || ""
                 },
-                date: item.date || "",
+                date: new Date(item.date).getTime().toString() || "",
                 id: item.id || "",
                 orderDetails: {
                     composite: [],
