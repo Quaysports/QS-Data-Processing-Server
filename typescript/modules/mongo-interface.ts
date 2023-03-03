@@ -107,7 +107,7 @@ export const bulkUpdateAny = async (collection: string, arr: Document[], updateK
     console.log("Saving page " + page + "/" + bulkUpdateOps.length);
     try {
       const db = client.db(process.env.DBNAME);
-      let result = await db.collection(collection).bulkWrite(bulk)
+      let result = await db.collection(collection).bulkWrite(bulk, { ordered: false })
       console.log("DB write took " + (((new Date()).getTime() - start.getTime()) / 1000) + "s");
       console.log(`${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`);
       if (result) updatedItems += result.modifiedCount

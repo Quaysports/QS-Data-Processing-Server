@@ -30,6 +30,7 @@ export async function beat(){
     await Auth();
     await checkForItemUpdates(status)
     await checkForStockUpdates(status)
+    await dbCleanUp()
 
     return
 }
@@ -49,7 +50,7 @@ const checkForItemUpdates = async (current: mostRecentUpdate) => {
     if (!UpdateItems || UpdateItems.length <= 0) return;
 
     await logDataAndUpdateDBStatus(UpdateItems, "Item")
-    await dbCleanUp()
+
     await postToWorker(
         "update",
         {msg: "", reqId: "", type: "updateAll", data: { skus: skuList(UpdateItems) }, id: new Date().getTime().toString()}
@@ -70,7 +71,7 @@ const checkForStockUpdates = async (current: mostRecentUpdate) => {
     if (!UpdateStock || UpdateStock.length <= 0) return;
 
     await logDataAndUpdateDBStatus(UpdateStock, "Stock")
-    await dbCleanUp()
+
     await postToWorker(
         "update",
         {msg: "", reqId: "", type: "stockTotal", data: {skus: skuList(UpdateStock), save: true}, id: new Date().getTime().toString()}
@@ -98,6 +99,9 @@ const dbCleanUp = async () => {
     )
 
     const data = linnQuery.Results as {SKU:string}[];
+
+    if(data.length === 0) return console.log('No SKUs found in Linnworks DB to Clean-up');
+
     const skuList = data.map( e => { return e.SKU })
 
     const result = await find<{ SKU: string }>("New-Items", {}, {SKU: 1})

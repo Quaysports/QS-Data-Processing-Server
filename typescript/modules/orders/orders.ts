@@ -115,13 +115,15 @@ export interface Scanned { min: number; correct: boolean; max: number; scaleWeig
 
 export const init = async () => {
     await linnGet()
-    //setInterval(() => { linnGet() }, 180000)
+    setInterval(() => { linnGet() }, 300000)
 }
 
 export const linnGet = async () => {
     let queryDate = await findOne<any>("Server", {id: "Orders"})
 
     let sqlDate = new Date(queryDate.lastUpdate)
+    let toSqlDate = new Date(sqlDate.getTime() + 15778800000)
+    let toSqlDateString = toSqlDate.toISOString().slice(0, 19).toString().replace('T', ' ')
     let sqlDateString = sqlDate.toISOString().slice(0, 19).toString().replace('T', ' ')
 
     let qResult = await getLinnQuery<LinnOrdersSQLResult>(
@@ -156,6 +158,8 @@ export const linnGet = async () => {
              INNER JOIN StockItem si on oi.fkStockItemId_processed = si.pkStockItemID
          WHERE
              Convert (DATETIME, o.dProcessedOn) >= Convert (DATETIME, '${sqlDateString}')
+            AND
+             Convert (DATETIME, o.dProcessedOn) <= Convert (DATETIME, '${toSqlDateString}')
            AND
              o.Source <> 'Shop'
          ORDER BY o.nOrderId`
@@ -165,7 +169,9 @@ export const linnGet = async () => {
     console.log("New orders found: " + data.length)
     if (data.length > 0) await processOrders(data)
 
-    await setData("Server", {id: "Orders"}, {lastUpdate: new Date()})
+    let currentDate = new Date()
+
+    await setData("Server", {id: "Orders"}, {lastUpdate: toSqlDate < currentDate ? toSqlDate : currentDate})
     return
 }
 
