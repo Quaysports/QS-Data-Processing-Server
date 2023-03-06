@@ -167,11 +167,11 @@ export const linnGet = async () => {
 
     let data = qResult.Results
     console.log("New orders found: " + data.length)
+    let currentDate = new Date()
+    await setData("Server", {id: "Orders"}, {lastUpdate: toSqlDate < currentDate ? toSqlDate : currentDate})
+
     if (data.length > 0) await processOrders(data)
 
-    let currentDate = new Date()
-
-    await setData("Server", {id: "Orders"}, {lastUpdate: toSqlDate < currentDate ? toSqlDate : currentDate})
     return
 }
 
