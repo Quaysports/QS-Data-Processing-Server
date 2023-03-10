@@ -80,6 +80,7 @@ function addPriceToUpdateMap(map: Map<string, object[]>, source: string, subsour
             Source: source,
             SubSource: subsource,
             Price: (price / 100).toFixed(2),
+            UpdateStatus: 0,
             StockItemId: linnid
         })
     }
