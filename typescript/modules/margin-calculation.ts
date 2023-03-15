@@ -24,6 +24,17 @@ export default async function ProcessMargins(item: sbt.Item, Fees: FeesClass, Pa
 
 const getPostageAndPackaging = async (item: sbt.Item, Packaging: PackagingClass, Postage: PostageClass) => {
 
+    if(item.mappedExtendedProperties){
+        if(!item.postage.id){
+            switch(item.mappedExtendedProperties.shippingFormat){
+                case "RM Large Letter": item.postage.id = "350325c8-a504-4f4b-b66b-d45c0305d4c1"; break;
+                case "RM Packet": item.postage.id = "82957a90-fcd3-4a57-8957-647a2380cacb"; break;
+                case "Courier": item.postage.id = "ecc31609-5f9c-9f0f-6b8f-45e874d698f5"; break;
+                default: item.postage.id = "82957a90-fcd3-4a57-8957-647a2380cacb";
+            }
+        }
+    }
+
     let postage = await Postage.find(item.postage.id)
     if (!postage) postage = {format: "", tag: "", vendor: "", cost: 0, id: ""}
     item.marginData.postage = modifyPostVal(postage.cost, item.postage.modifier)
