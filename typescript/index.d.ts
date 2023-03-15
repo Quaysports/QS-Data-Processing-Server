@@ -201,6 +201,12 @@ declare namespace sbt {
             image11: Image
         }
         stockHistory: number[][]
+        stockConsumption:{
+            historicConsumption: number[],
+            historicOutOfStock: number,
+            oneMonthOutOfStock: number,
+            fourMonthOutOfStock: number,
+        }
         linkedSKUS: string[]
         //move items from IDBFILTER into tags
         tags: string[]
@@ -266,7 +272,7 @@ declare namespace sbt {
     }
     interface OnOrder {
         confirmed: boolean;
-        due: string;
+        due: number;
         id: string;
         quantity: number;
     }
@@ -296,6 +302,67 @@ declare namespace sbt {
             items?: Item[],
         },
         id: string
+    }
+
+    export interface Shipment {
+        _id?: { $oid: string };
+        id: number;
+        bankCharges: number;
+        confirmed: boolean;
+        booked: boolean;
+        credit: number;
+        data: ShipmentItem[];
+        delivered: boolean;
+        delivery:boolean;
+        due: string;
+        duty: number;
+        exchangeRate: number;
+        m3total: number;
+        shipping: number;
+        subTotal: number;
+        tag: string;
+        totalCartons: number;
+        depReq: number;
+        dutyPound: number;
+        grandTotal: number;
+        outstanding: number;
+        overdue: boolean;
+        ready: boolean;
+        total: number;
+        totalExVat: number;
+        totalPound: number;
+        vat: number;
+        intId: string;
+        atSea: boolean;
+        shippingCompany: string;
+        shipRef:string;
+    }
+
+    export interface ShipmentItem {
+        dutyValue: number
+        code: string
+        orderid: string
+        hscode: string
+        poundTotal: number
+        billDesc: string;
+        length: string;
+        perOfOrder: number;
+        dollarTotal: number;
+        fobPound: number;
+        qtyPerBox: string;
+        fobDollar: string;
+        m3perBox: number;
+        dutyPer: string;
+        supplier: string;
+        qty: string;
+        width: string;
+        numOfBoxes: number;
+        m3total: number;
+        _id?: string ;
+        sku: string;
+        totalPerItem: number;
+        desc: string;
+        height: string
     }
 }
 

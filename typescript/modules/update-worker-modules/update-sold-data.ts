@@ -16,7 +16,7 @@ export default async function UpdateSoldData(merge: Map<string, sbt.Item>, skus?
 
     const result = await findDistinct("New-Items", "SKU", query)
 
-    if (!result) return
+    if (!result) return merge
 
     let skuList = ''
     for (let sku of result) skuList === '' ? skuList = `'${sku}'` : skuList += `,'${sku}'`
@@ -68,6 +68,8 @@ export default async function UpdateSoldData(merge: Map<string, sbt.Item>, skus?
             }
         }
     }
+
+
 
     return merge as Map<string, sbt.Item>
 }

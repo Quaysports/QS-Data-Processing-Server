@@ -37,7 +37,9 @@ parentPort!.on("message", async (req: sbt.WorkerReq) => {
 
 const runUpdateStockTotals = async (req: sbt.WorkerReq) => {
     const merge = await UpdateStockTotals(undefined, req.data.skus)
-    if (req.data.save) await bulkUpdateItems(merge)
+    let soldDataMerge = await UpdateSoldData(merge, req.data.skus)
+
+    if (req.data.save) await bulkUpdateItems(soldDataMerge)
     return merge;
 }
 

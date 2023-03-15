@@ -33,6 +33,7 @@ export const itemTemplate = ():sbt.Item => ({
         ready: {amazon: false, amazonStore: false, ebay: false, magento: false, zenTackle: false},
         stockForecast: {hide: false, list: false}
     },
+    stockConsumption: {fourMonthOutOfStock: 0, historicConsumption: [], historicOutOfStock: 0, oneMonthOutOfStock: 0},
     compositeItems: [],
     description: "",
     discounts: {magento: 0, shop: 0},

@@ -26,8 +26,6 @@ export interface SQLQuery {
 
 export default async function UpdateItems(skus?: string) {
     await Auth(true)
-    console.log("skus: " + skus)
-
     function queryString() {
         return `SELECT si.pkStockItemID       AS linnId,
                        si.ItemNumber          AS SKU,
@@ -154,6 +152,12 @@ function itemTemplate(): sbt.Item {
         stock: {checkedDate: "", default: 0, minimum: 0, total: 0, value: 0, warehouse: 0, tradePack:null},
         stockTake: {checked: false, date: undefined, quantity: 0},
         stockHistory: [],
+        stockConsumption: {
+            fourMonthOutOfStock: 0,
+            historicConsumption: [],
+            historicOutOfStock: 0,
+            oneMonthOutOfStock: 0
+        },
         supplier: "",
         suppliers: [],
         tags: [],

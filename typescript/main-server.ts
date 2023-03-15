@@ -30,7 +30,7 @@ const startSever = async () => {
     app.use("/images", express.static(path.join(__dirname, "../images")));
     app.use("/brand-label-images", express.static(path.join(__dirname, "../brand-label-images")));
 
-    const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000"];
+    const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000"];
     app.use((req, res, next) => {
         console.log(req.headers)
         allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
