@@ -1,5 +1,5 @@
 import fs from "fs";
-import {deleteImage, getImages, getItemForStockLookup, uploadImages} from "../modules/routes/items";
+import {deleteImage, getMainItemImage, getItemForStockLookup, uploadImages} from "../modules/routes/items";
 import * as express from 'express'
 import {postToWorker} from "../modules/worker/worker-factory";
 
@@ -10,12 +10,10 @@ itemsRoutes.post('/StockLookup', async (req, res) => {
     const item = await getItemForStockLookup(req.body)
     res.send(item)
 })
-itemsRoutes.post('/GetImages', async (req, res) => {
-    const images = await getImages(req.body, req.body.type)
-    req.body.type || !images
-        ? res.set('Content-Type', 'text/plain')
-        : res.set('Content-Type', 'application/json')
-    res.send(images)
+itemsRoutes.post('/GetItemImage', async (req, res) => {
+    const imagePath = await getMainItemImage(req.body)
+    res.set('Content-Type', 'text/plain')
+    res.send(imagePath)
 })
 itemsRoutes.post('/GetBrandLabelImages', async (req, res) => {
     const data = fs.readdirSync("./brand-label-images")
