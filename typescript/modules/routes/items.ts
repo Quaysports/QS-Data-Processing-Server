@@ -1,6 +1,6 @@
 import fs from "fs";
 import sharp from "sharp";
-import {findOne, setData} from "../mongo-interface";
+import {findDistinct, findOne, setData} from "../mongo-interface";
 import {updateLinnItem} from "../linnworks/api";
 
 interface DbImage extends Pick<sbt.Item, "_id" | "SKU"> {
@@ -23,6 +23,8 @@ const dbUpdateImage = async (item: DbImage) => {
 
 export const getMainItemImage = async (sku:string) => {
 
+    console.log("image sku: " + sku)
+
     const item = await findOne<sbt.Item>("New-Items", {SKU: sku}, {images: 1})
     if (!item?.images?.main) return
 
@@ -32,7 +34,11 @@ export const getMainItemImage = async (sku:string) => {
 }
 
 export const getItemForStockLookup = async (sku:string) => {
-    return await findOne<sbt.Item>("New-Items", {SKU: sku}, {images: 1, title: 1, SKU: 1, composite:1})
+    return await findOne<sbt.Item>("New-Items", {SKU: sku}, {title: 1, SKU: 1, compositeItems:1})
+}
+
+export const getSKUListForStockLookup = async () => {
+    return await findDistinct("New-Items", "SKU", {isListingVariation: false})
 }
 
 export async function uploadImages(file: { _id: string, SKU: string, id: string, filename: string, image: string }) {
