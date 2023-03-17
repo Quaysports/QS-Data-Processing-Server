@@ -21,6 +21,23 @@ const dbUpdateImage = async (item: DbImage) => {
     }
 }
 
+export const getImages = async (sku:string, type:keyof sbt.Item["images"]) => {
+    interface itemImageDetails {
+        _id:string,
+        images:sbt.Item["images"]
+    }
+    const item = await findOne<itemImageDetails>("New-Items", {SKU: sku}, {images: 1})
+    if (!item || !item.images || !item.images[type]) return
+    if (type) {
+        let path = item.images[type].link ? "/images/" + item.images[type].link + "/" : "/images/" + sku + "/"
+        return path + item.images[type].filename
+    }
+}
+
+export const getItemForStockLookup = async (sku:string) => {
+    return await findOne<sbt.Item>("New-Items", {SKU: sku}, {images: 1, title: 1, SKU: 1, composite:1})
+}
+
 export async function uploadImages(file: { _id: string, SKU: string, id: string, filename: string, image: string }) {
 
     const makeImagesFolder = async () => {
