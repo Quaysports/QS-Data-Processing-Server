@@ -11,7 +11,7 @@ itemsRoutes.post('/StockLookup', async (req, res) => {
     res.send(item)
 })
 itemsRoutes.post('/GetImages', async (req, res) => {
-    const images = await getImages(req.body.sku, req.body.type)
+    const images = await getImages(req.body, req.body.type)
     req.body.type || !images
         ? res.set('Content-Type', 'text/plain')
         : res.set('Content-Type', 'application/json')
