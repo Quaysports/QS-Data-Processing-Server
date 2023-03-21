@@ -85,20 +85,28 @@ export default async function UpdateStockTotals(merge?: Map<string, sbt.Item>, s
         for (let i in item.stockConsumption.historicConsumption) {
             item.stockConsumption.historicConsumption[i] = await historicAvg(Number(i), item.stockHistory)
         }
-        item.stockConsumption.historicOutOfStock = calculateHistoricOOS(item.stock.total, item.stockConsumption.historicConsumption)
-        const oneMonthConsumption = calculateOneMonthConsumption(item.stockHistory)
-        item.stockConsumption.oneMonthOutOfStock = calculateOOS(item.stock.total, oneMonthConsumption)
-        const fourMonthConsumption = calculateFourMonthConsumption(item.stockHistory)
-        item.stockConsumption.fourMonthOutOfStock = calculateOOS(item.stock.total, fourMonthConsumption)
+
 
         if (item.onOrder.length < 0) continue
 
         //recalculate out of stock based on incoming shipments
         let combinedStockLevel = item.stock.total
-        for (let order of item.onOrder) {
-            if (order.due > item.stockConsumption.historicOutOfStock) continue
-            combinedStockLevel += order.quantity
-            item.stockConsumption.historicOutOfStock = calculateHistoricOOS(combinedStockLevel, item.stockConsumption.historicConsumption)
+        if(item.onOrder.length === 0) {
+            item.stockConsumption.historicOutOfStock = calculateHistoricOOS(item.stock.total, item.stockConsumption.historicConsumption)
+            const oneMonthConsumption = calculateOneMonthConsumption(item.stockHistory)
+            item.stockConsumption.oneMonthOutOfStock = calculateOOS(item.stock.total, oneMonthConsumption)
+            const fourMonthConsumption = calculateFourMonthConsumption(item.stockHistory)
+            item.stockConsumption.fourMonthOutOfStock = calculateOOS(item.stock.total, fourMonthConsumption)
+        } else {
+            for (let order of item.onOrder) {
+                if (order.due > item.stockConsumption.historicOutOfStock) continue
+                combinedStockLevel += order.quantity
+                item.stockConsumption.historicOutOfStock = calculateHistoricOOS(combinedStockLevel, item.stockConsumption.historicConsumption)
+                const oneMonthConsumption = calculateOneMonthConsumption(item.stockHistory)
+                item.stockConsumption.oneMonthOutOfStock = calculateOOS(combinedStockLevel, oneMonthConsumption)
+                const fourMonthConsumption = calculateFourMonthConsumption(item.stockHistory)
+                item.stockConsumption.fourMonthOutOfStock = calculateOOS(combinedStockLevel, fourMonthConsumption)
+            }
         }
     }
     return merge as Map<string, sbt.Item>
