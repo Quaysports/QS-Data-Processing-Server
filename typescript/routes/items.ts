@@ -42,6 +42,15 @@ itemsRoutes.post('/UpdateAll', async (req, res) => {
     res.send({status: 'done'})
 })
 
+itemsRoutes.post('/UpdateItemStock', async (req, res) => {
+    console.dir(req.body)
+    await postToWorker(
+        "update",
+        {msg: "", reqId: "", type: "stockTotal", data: {skus: req.body.skuList, save: true}, id: new Date().getTime().toString()}
+    )
+    res.send({status: 'done'})
+})
+
 itemsRoutes.post('/UpdateLinnworksChannelPrices', async (req, res) => {
     await postToWorker("update",
         {

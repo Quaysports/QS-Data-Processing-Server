@@ -32,7 +32,6 @@ const startSever = async () => {
 
     const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000"];
     app.use((req, res, next) => {
-        console.log(req.headers)
         allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
     })
 
