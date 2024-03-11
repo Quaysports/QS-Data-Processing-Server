@@ -98,14 +98,16 @@ const dbCleanUp = async () => {
         'SELECT ItemNumber AS SKU FROM StockItem WHERE (bLogicalDelete = 0 OR IsVariationGroup = 1)'
     )
 
+    if (!linnQuery.Results || linnQuery.Results.length === 0) {
+        console.log('No SKUs found in Linnworks DB to Clean-up');
+        return;
+    }
+
     const data = linnQuery.Results as {SKU:string}[];
-
-    if(data.length === 0) return console.log('No SKUs found in Linnworks DB to Clean-up');
-
-    const skuList = data.map( e => { return e.SKU })
+    const skuList = data.map(e => e.SKU);
 
     const result = await find<{ SKU: string }>("New-Items", {}, {SKU: 1})
-    if(!result) return
+    if (!result) return;
 
     for (let value of result) {
         if (skuList.indexOf(value.SKU) === -1) await deleteOne("New-Items", {SKU: value.SKU})

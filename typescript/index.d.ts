@@ -43,6 +43,7 @@ declare namespace sbt {
             magento:number
             //used to be SHOPPRICEINCVAT
             shop:number
+            magentoSpecial: number
         }
         discounts:{
             shop:number

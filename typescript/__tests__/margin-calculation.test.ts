@@ -45,7 +45,7 @@ beforeEach(() => {
         ...itemTemplate(),
         postage: {id: "1", modifier: "", price: 0},
         packaging: {editable: false, group: "1", items: [], lock: false},
-        prices: {retail: 1000, amazon: 1500, ebay: 1500, magento: 1300, purchase: 100, shop: 1200},
+        prices: {retail: 1000, amazon: 1500, ebay: 1500, magento: 1300, purchase: 100, shop: 1200, magentoSpecial: 0},
     }
 })
 

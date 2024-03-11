@@ -38,9 +38,18 @@ const connectToLinnworksAndGetAuth = () => {
             });
 
             res.on('end', async () => {
-                let data = JSON.parse(str);
-                connectionDetails = {server: data['Server'].replace('https://', ''), token: data['Token']};
-                await setData("Server", {id: "Linnworks"}, {id: "Linnworks", details: connectionDetails});
+                let data;
+                try {
+                    data = JSON.parse(str);
+                    if (data && data['Server'] && data['Token']) {
+                        connectionDetails = { server: data['Server'].replace('https://', ''), token: data['Token'] };
+                        await setData("Server", { id: "Linnworks" }, { id: "Linnworks", details: connectionDetails });
+                    } else {
+                        console.error("Response data is missing 'Server' or 'Token' properties:", data);
+                    }
+                } catch (error) {
+                    console.error("Error parsing response data:", error);
+                }
                 resolve();
             });
         });

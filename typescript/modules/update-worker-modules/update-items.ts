@@ -199,7 +199,7 @@ function itemTemplate(): sbt.Item {
             size: ""
         },
         packaging: {editable: false, group: "", items: [], lock: false},
-        prices: {amazon: 0, ebay: 0, magento: 0, purchase: 0, retail: 0, shop: 0},
+        prices: {amazon: 0, ebay: 0, magento: 0, purchase: 0, retail: 0, shop: 0, magentoSpecial: 0},
         title: "",
         till: {color: "#ffffff"},
         weight: 0

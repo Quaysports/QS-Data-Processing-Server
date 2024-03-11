@@ -99,7 +99,7 @@ export const itemTemplate = ():sbt.Item => ({
     onOrder: [],
     packaging: {editable: false, group: "", items: [], lock: false},
     postage: {id: "", modifier: "", price: 0},
-    prices: {amazon: 0, ebay: 0, magento: 0, purchase: 0, retail: 0, shop: 0},
+    prices: {amazon: 0, ebay: 0, magento: 0, purchase: 0, retail: 0, shop: 0, magentoSpecial: 0},
     shelfLocation: {letter: "", number: "", prefix: ""},
     shortDescription: "",
     stock: {checkedDate: "", default: 0, minimum: 0, total: 0, value: 0, warehouse: 0, tradePack:null},

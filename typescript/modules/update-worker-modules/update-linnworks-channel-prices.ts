@@ -1,8 +1,9 @@
 import Auth from "../linnworks/auth";
 import GetLinnworksChannelPrices from "./get-linnworks-channel-prices";
-import {updateLinnItem} from "../linnworks/api"
+import {getLinnQuery, updateLinnItem} from "../linnworks/api"
 import {GUID} from "../utilities";
 import {bulkUpdateItems, findAggregate} from "../mongo-interface";
+import UpdateItems, { SQLQuery, getItemsFromDB } from "./update-items";
 
 export default async function UpdateLinnworksChannelPrices(
     merge: Map<string, sbt.Item> = new Map<string, sbt.Item>(), data?: sbt.Item[]
@@ -18,20 +19,29 @@ export default async function UpdateLinnworksChannelPrices(
 
     let amazonQuery = await findAggregate<QueryResult>(
         "New-Items",
-        generateAggrigationQuery("amazon", argSkuList)
+        generateAggregationQuery("amazon", argSkuList)
     )
     let ebayQuery = await findAggregate<QueryResult>(
         "New-Items",
-        generateAggrigationQuery("ebay", argSkuList)
+        generateAggregationQuery("ebay", argSkuList)
     )
     let magentoQuery = await findAggregate<QueryResult>(
         "New-Items",
-        generateAggrigationQuery("magento", argSkuList)
+        generateAggregationQuery("magento", argSkuList)
+    )
+    // updates extendedProprties for Magento Special Price
+    let extendedPropertiesMagentoSpecialQuery = await findAggregate<SpecialPriceQueryResult>(
+        "New-Items",
+        specialPriceQuery(argSkuList)
     )
 
     let updates = new Map<string, object[]>([
+        // Linnworks - update 'listing descriptions' vendor channel prices
         ["//api/Inventory/UpdateInventoryItemPrices", []],
         ["//api/Inventory/CreateInventoryItemPrices", []],
+        // Linnworks - update 'extended properties' - for special price
+        ["//api/Inventory/UpdateInventoryItemExtendedProperties", []],
+        ["//api/Inventory/CreateInventoryItemExtendedProperties", []]
     ])
 
     skuList = ''
@@ -51,6 +61,12 @@ export default async function UpdateLinnworksChannelPrices(
         for (let itemResult of magentoQuery) {
             skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
             addPriceToUpdateMap(updates, 'MAGENTO', 'http://quaysports.com', itemResult.price, itemResult.linnId, itemResult.channelId)
+        }
+    }
+    if (extendedPropertiesMagentoSpecialQuery && extendedPropertiesMagentoSpecialQuery.length > 0 && extendedPropertiesMagentoSpecialQuery[0].magentoSpecialPrice !== 0) {
+        for (let itemResult of extendedPropertiesMagentoSpecialQuery) {
+            skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
+            addSpecialPriceToUpdateMap(updates, itemResult.pkRowId, itemResult.linnId, ((itemResult.magentoSpecialPrice / 100).toFixed(2)))
         }
     }
 
@@ -86,6 +102,26 @@ function addPriceToUpdateMap(map: Map<string, object[]>, source: string, subsour
     }
 }
 
+function addSpecialPriceToUpdateMap(map: Map<string, object[]>, id: string, linnId: string, price: string, sku?: string) {
+    if (id) { // to update
+        map.get("//api/Inventory/UpdateInventoryItemExtendedProperties")!.push({
+            pkRowId: id,
+            fkStockItemId: linnId,
+            ProperyName: 'Special Price',
+            PropertyValue: `${price}`,
+            PropertyType: 'Attribute'
+        })
+    } else { // to create
+        map.get("//api/Inventory/CreateInventoryItemExtendedProperties")!.push({
+            fkStockItemId: linnId,
+            SKU: sku,
+            PropertyType: "Attribute",
+            PropertyValue: `${price}`,
+            ProperyName: 'Special Price'
+        })
+    }
+}
+
 const batchUpdateFromMap = async (updates: Map<string, object[]>) => {
 
     let results: object[] = []
@@ -113,7 +149,15 @@ interface QueryResult {
     channelPrice: number
 }
 
-function generateAggrigationQuery(channel: "amazon" | "ebay" | "magento", skus?: string[]) {
+interface SpecialPriceQueryResult {
+    SKU: string
+    linnId: string
+    magentoSpecialPrice: number
+    pkRowId: string
+    expropSpecialPrice: number
+}
+
+function generateAggregationQuery(channel: "amazon" | "ebay" | "magento" | "magentoSpecial", skus?: string[]) {
     let query = [
         {
             '$match': {
@@ -156,4 +200,58 @@ function generateAggrigationQuery(channel: "amazon" | "ebay" | "magento", skus?:
 
     return query
 
+}
+
+function specialPriceQuery(skus?: string[]) {
+    let query = [
+        {
+            '$match': {
+                'isListingVariation': false,
+                'prices.magentoSpecial': { '$exists': true }
+            }
+        },
+        {
+            '$project': {
+                'SKU': 1,
+                'linnId': 1,
+                'extendedProperties': {
+                    '$filter': {
+                        'input': '$extendedProperties',
+                        'as': 'ep',
+                        'cond': { '$eq': ['$$ep.epName', 'Special Price'] }
+                    }
+                },
+                'magentoSpecialPrice': '$prices.magentoSpecial' 
+            }
+        },
+        {
+            '$unwind': {
+                'path': '$extendedProperties',
+                'preserveNullAndEmptyArrays': true
+            }
+        },
+        {
+            '$project': {
+                'SKU': 1,
+                'linnId': 1,
+                'ep': '$extendedProperties',
+                'magentoSpecialPrice': 1
+            }
+        },
+        {
+            '$project': {
+                'SKU': 1,
+                'linnId': 1,
+                'magentoSpecialPrice': 1,
+                'pkRowId': '$ep.pkRowId',
+                'expropSpecialPrice': '$ep.epValue'
+            }
+        }
+    ];    
+
+    if (skus) { // @ts-ignore
+        query[0].$match.SKU = {$in: skus}
+    }
+
+    return query
 }

@@ -122,18 +122,20 @@ const getMagentoListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
 
     if (item.tags.includes("domestic")) {
         if (item.discounts.magento === 0) item.discounts.magento = 5
+        if (!item.prices.magentoSpecial) item.prices.retail ? item.prices.magentoSpecial = roundToNearest(item.prices.retail * 0.95) : 0;
+        // if (!item.prices.magentoSpecial || item.prices.magentoSpecial === 0) item.discounts.magento ? item.prices.magentoSpecial = roundToNearest(item.prices.retail * (100 - item.prices.magento)) : 0;
         let discountPercentage = item.discounts.magento ? 1 - (item.discounts.magento / 100) : 1
-        item.prices.magento = discountPercentage === 1
+        if (item.prices.magento === 0) item.prices.magento = item.prices.retail
+        item.prices.magentoSpecial = discountPercentage === 1
             ? item.prices.retail
-            : roundToNearest(item.prices.retail * discountPercentage)
-
+            : (roundToNearest(item.prices.retail * discountPercentage))
         item.channelPrices.magento.updateRequired = item.channelPrices.magento.price !== item.prices.magento
     }
 
-    if (!item.prices.magento) {
-        item.marginData.magento.profit = 0;
+    if (!item.prices.magento) { // ---------------------- redundant? -----------------------
+        item.marginData.magento.profit = 0 
         return
-    } else {
+    } else if (!item.prices.magentoSpecial || item.prices.magentoSpecial === 0) {
         item.marginData.magento.fees = Fees.calc('magento', item.prices.magento)
         item.marginData.magento.salesVAT = item.prices.magento - (item.prices.magento / Fees.VAT());
         item.marginData.magento.profit = item.prices.magento < 25
@@ -143,6 +145,25 @@ const getMagentoListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
                 item.marginData.magento.salesVAT
             )
             : item.prices.magento - (
+                item.prices.purchase +
+                item.marginData.postage +
+                item.marginData.packaging +
+                item.marginData.magento.fees +
+                item.marginData.magento.salesVAT
+            )
+
+        return
+
+    } else {
+            item.marginData.magento.fees = Fees.calc('magento', item.prices.magentoSpecial)
+            item.marginData.magento.salesVAT = item.prices.magentoSpecial - (item.prices.magentoSpecial / Fees.VAT());
+            item.marginData.magento.profit = item.prices.magentoSpecial < 25
+            ? item.prices.magentoSpecial - (
+                item.prices.purchase +
+                item.marginData.magento.fees +
+                item.marginData.magento.salesVAT
+            )
+            : item.prices.magentoSpecial - (
                 item.prices.purchase +
                 item.marginData.postage +
                 item.marginData.packaging +

@@ -2,13 +2,21 @@ import Auth from "../linnworks/auth";
 import {getLinnQuery} from "../linnworks/api";
 import {getItemsFromDB} from "./update-items";
 
-export interface SQLQuery {
+export interface ListingDescriptionsSQLQuery {
     ItemNumber: string,
     linnId: string,
     Source:"amazon" | "ebay" | "magento",
     SubSource:string,
     Price:string,
     UpdateStatus:string,
+    pkRowId:string
+}
+
+export interface ExtendedPropertiesSQLQuery {
+    linnId: string,
+    epName: string,
+    epValue:string,
+    epType:string,
     pkRowId:string
 }
 
@@ -21,7 +29,7 @@ export default async function GetLinnworksChannelPrices(
 
     if(!merge) { merge = await getItemsFromDB(skus) }
 
-    let query = `SELECT si.pkStockItemId as linnId,
+    let listingDescriptionsQuery = `SELECT si.pkStockItemId as linnId,
                         sp.Source,
                         sp.SubSource,
                         sp.SalePrice as Price,
@@ -33,7 +41,50 @@ export default async function GetLinnworksChannelPrices(
                    AND sp.SubSource <> 'https://quaysports.com'
                      ${skus ? "AND si.ItemNumber IN (" + skus + ")" : ""}`
 
-    const result = (await getLinnQuery<SQLQuery>(query)).Results
+    let extendedPropertiesQuery = `SELECT
+                    ep.fkStockItemId AS linnId,
+                    ep.ProperyName AS epName,
+                    ep.ProperyValue AS epValue,
+                    ep.ProperyType AS epType,
+                    ep.pkRowId AS pkRowId
+                FROM StockItem_ExtendedProperties ep
+                LEFT JOIN StockItem si ON ep.fkStockItemId = si.pkStockItemId
+                LEFT JOIN Stock_ItemComposition sic ON si.pkStockItemId = sic.pkStockItemId
+                LEFT JOIN StockItem si2 ON sic.pkLinkStockItemId = si2.pkStockItemId
+                WHERE (si.bLogicalDelete = 0 OR si.IsVariationGroup = 1)
+                    ${skus ? "AND si.ItemNumber IN (" + skus + ")" : ""}`;
+
+    
+    const result = (await getLinnQuery<ListingDescriptionsSQLQuery>(listingDescriptionsQuery)).Results
+    const extendedProperties = (await getLinnQuery<ExtendedPropertiesSQLQuery>(extendedPropertiesQuery)).Results
+    if (extendedProperties) {
+        const specialPriceItems = extendedProperties.filter(item => item.epName === "Special Price");
+
+        for (let item of specialPriceItems) {
+            const { linnId, epName, pkRowId, epValue, epType } = item;
+
+            let mergeItem = merge.get(linnId);
+            if (!mergeItem) continue;
+
+            let extendedPropertiesData: sbt.LinnExtendedProperty = {
+                epName: epName,
+                epType: epType,
+                epValue: epValue,
+                pkRowId: pkRowId
+            };
+
+            // Find the index of the existing item with epName "Special Price"
+            const index = mergeItem.extendedProperties.findIndex(prop => prop.epName === "Special Price");
+
+            // If found, replace it; otherwise, push the new item
+            if (index !== -1) {
+                mergeItem.extendedProperties[index] = extendedPropertiesData;
+            } else {
+                mergeItem.extendedProperties.push(extendedPropertiesData);
+            }
+        }
+    }
+
 
     for (let item of result) {
         const {linnId, Source, SubSource, Price, UpdateStatus, pkRowId} = item

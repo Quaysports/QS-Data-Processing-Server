@@ -1,7 +1,7 @@
-import GetLinnworksChannelPrices, {SQLQuery} from "../../modules/update-worker-modules/get-linnworks-channel-prices";
+import GetLinnworksChannelPrices, {ListingDescriptionsSQLQuery} from "../../modules/update-worker-modules/get-linnworks-channel-prices";
 import {itemTemplate} from "../../__mocks__/item-template";
 
-let mockLinnData: SQLQuery[]
+let mockLinnData: ListingDescriptionsSQLQuery[]
 beforeEach(() => {
     jest.clearAllMocks()
     mockLinnData = [

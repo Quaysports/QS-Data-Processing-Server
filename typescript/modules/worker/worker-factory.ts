@@ -17,14 +17,24 @@ export function postToWorker(worker: string, data: sbt.WorkerData): Promise<any>
             })
             emitter.once('error', async (err) => {
                 console.log("Worker error: ", err)
-                if (events.has(data.id)) events.delete(data.id)
-                await newWorker.terminate()
-                reject(err)
+                console.error("Error stack trace:", err.stack); // Log stack trace if available
+                console.error("Error details:", err.message); // Log error message
+                if (events.has(data.id)) {
+                    events.delete(data.id);
+                }
+                try {
+                    await newWorker.terminate();
+                    reject(err);
+                } catch (terminationError) {
+                    console.error("Error while terminating worker:", terminationError);
+                    reject(terminationError);
+                }
             })
             emitter.once('close', async () => {
                 console.log("Worker close event!")
                 if (events.has(data.id)) events.delete(data.id)
                 await newWorker.terminate()
+                reject(new Error("Worker closed unexpectedly"));
             })
             events.set(data.id, emitter)
 

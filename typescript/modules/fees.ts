@@ -25,14 +25,24 @@ interface VatApplicable {
 }
 
 export const get = async () => {
-    let result = await findOne<FeesData>("New-Fees")
-    return result!
+    try {
+        let result = await findOne<FeesData>("New-Fees");
+        return result!;
+    } catch (error) {
+        console.error('Error fetching data in get function:', error);
+        throw error; // Re-throwing the error to propagate it to the caller
+    }
 }
 
 export const update = async (data: FeesData) => {
-    let query = {_id: data._id}
-    delete data._id
-    return await setData("New-Fees", query, data)
+    try {
+        let query = { _id: data._id };
+        delete data._id;
+        return await setData("New-Fees", query, data);
+    } catch (error) {
+        console.error('Error updating data in update function:', error);
+        throw error; // Re-throwing the error to propagate it to the caller
+    }
 }
 
 export interface FeesClass {
@@ -50,7 +60,13 @@ export class Fees implements FeesClass {
     }
 
     async initialize() {
-        await get().then((data) => this.fd = data)
+        try {
+            const data = await get();
+            this.fd = data;
+        } catch (error) {
+            console.error('Error initializing Fees:', error);
+            throw error; // Re-throwing the error to propagate it to the caller
+        }
     }
 
     private fd: FeesData | undefined;
