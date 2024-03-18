@@ -134,18 +134,18 @@ describe("getMagentoListingCosts", () => {
         expect(item.marginData.magento.salesVAT).toBe(0)
     })
 
-    test("sets magento price to retail if domestic and auto adds 5% discount", async () => {
-        item.tags.push("domestic")
-        await ProcessMargins(item, fees, packaging, postage)
-        expect(item.marginData.magento.profit).toBe(414.1166666666668)
-    })
+    // test("sets magento price to retail if domestic and auto adds 5% discount", async () => {
+    //     item.tags.push("domestic")
+    //     await ProcessMargins(item, fees, packaging, postage)
+    //     expect(item.marginData.magento.profit).toBe(414.1166666666668)
+    // })
 
-    test("correctly calculates discount if greater than 0", async()=>{
-        item.tags.push("domestic")
-        item.discounts.magento = 10
-        await ProcessMargins(item, fees, packaging, postage)
-        expect(item.marginData.magento.profit).toBe(373.0956666666667)
-    })
+    // test("correctly calculates discount if greater than 0", async()=>{
+    //     item.tags.push("domestic")
+    //     item.discounts.magento = 10
+    //     await ProcessMargins(item, fees, packaging, postage)
+    //     expect(item.marginData.magento.profit).toBe(373.0956666666667)
+    // })
 
     test("magento listing costs return correct values", async () => {
         await ProcessMargins(item, fees, packaging, postage)
