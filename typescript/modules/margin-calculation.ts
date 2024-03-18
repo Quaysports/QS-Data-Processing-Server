@@ -122,6 +122,9 @@ const getMagentoListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
 
     if (item.tags.includes("domestic")) {
         if (item.discounts.magento === 0) item.discounts.magento = 5
+        if (item.discounts.magento > 0) {
+            item.discounts.magento += 5
+        }
         if (!item.prices.magentoSpecial) item.prices.retail ? item.prices.magentoSpecial = roundToNearest(item.prices.retail * 0.95) : 0;
         // if (!item.prices.magentoSpecial || item.prices.magentoSpecial === 0) item.discounts.magento ? item.prices.magentoSpecial = roundToNearest(item.prices.retail * (100 - item.prices.magento)) : 0;
         let discountPercentage = item.discounts.magento ? 1 - (item.discounts.magento / 100) : 1
