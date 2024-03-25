@@ -170,7 +170,7 @@ export const linnGet = async () => {
     let currentDate = new Date()
     await setData("Server", {id: "Orders"}, {lastUpdate: toSqlDate < currentDate ? toSqlDate : currentDate})
 
-    if (data.length > 0) await processOrders(data)
+    if (data && data.length > 0) await processOrders(data)
 
     return
 }
