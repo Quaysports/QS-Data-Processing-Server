@@ -80,6 +80,8 @@ export default async function UpdateStockTotals(merge?: Map<string, sbt.Item>, s
                 historicConsumption: []
             }
         }
+        console.log(item.SKU);
+        
         item.stockConsumption.historicConsumption = Array(12).fill(0)
 
         for (let i in item.stockConsumption.historicConsumption) {
@@ -213,11 +215,11 @@ async function historicAvg(month: number, hist: sbt.Item["stockHistory"]) {
     let sales = 0
 
     for (let year of hist) {
-        if (Number(year[0]) === cd.getFullYear()) continue;
+        // limits item's stock history for the previous 3 years, not inlcuding current year
+        if (Number(year[0]) === cd.getFullYear() || Number(year[0]) <= cd.getFullYear() - 4) continue;
         years++
         sales += year[month + 1]
     }
-
     return sales === 0 || years === 0 ? 0 : Math.round((sales / years) * 1.1)
 }
 
