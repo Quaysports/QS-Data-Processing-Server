@@ -80,7 +80,6 @@ export default async function UpdateStockTotals(merge?: Map<string, sbt.Item>, s
                 historicConsumption: []
             }
         }
-        console.log(item.SKU);
         
         item.stockConsumption.historicConsumption = Array(12).fill(0)
 
