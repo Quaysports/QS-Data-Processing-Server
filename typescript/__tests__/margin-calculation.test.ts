@@ -24,11 +24,11 @@ const postage = new Postage(postageData)
 
 const feesData: FeesData = {
     VAT: 20,
-    flat: {amazon: 0, ebay: 30, magento: 30, shop: 0},
+    flat: {amazon: 0, ebay: 30, magento: 30, shop: 0, onbuy: 0},
     lastUpdate: "",
-    listing: {amazon: 1550, ebay: 1090, magento: 290, shop: 175},
-    subscription: {amazon: 1, ebay: 2, magento: 10, shop: 0},
-    vatApplicable: {amazon: false, ebay: false, magento: false, shop: false}
+    listing: {amazon: 1550, ebay: 1090, magento: 290, shop: 175, onbuy: 1350},
+    subscription: {amazon: 1, ebay: 2, magento: 10, shop: 0, onbuy: 0},
+    vatApplicable: {amazon: false, ebay: false, magento: false, shop: false, onbuy: false}
 }
 const fees = new Fees(feesData)
 
@@ -45,7 +45,7 @@ beforeEach(() => {
         ...itemTemplate(),
         postage: {id: "1", modifier: "", price: 0},
         packaging: {editable: false, group: "1", items: [], lock: false},
-        prices: {retail: 1000, amazon: 1500, ebay: 1500, magento: 1300, purchase: 100, shop: 1200, magentoSpecial: 0},
+        prices: {retail: 1000, amazon: 1500, ebay: 1500, magento: 1300, purchase: 100, shop: 1200, magentoSpecial: 0, "onbuy v2": 0},
     }
 })
 

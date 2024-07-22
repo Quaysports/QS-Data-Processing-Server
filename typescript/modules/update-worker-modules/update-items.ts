@@ -92,6 +92,7 @@ function itemTemplate(): sbt.Item {
             amazon: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
             ebay: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
             magento: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
+            "onbuy v2": {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
             shop: {price: 0, status: 0}
         },
         checkboxStatus: {
@@ -139,6 +140,7 @@ function itemTemplate(): sbt.Item {
             amazon: {fees: 0, primePostage: 0, primeProfit: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
             ebay: {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
             magento: {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
+            "onbuy v2": {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
             packaging: 0,
             postage: 0,
             shop: {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
@@ -199,7 +201,7 @@ function itemTemplate(): sbt.Item {
             size: ""
         },
         packaging: {editable: false, group: "", items: [], lock: false},
-        prices: {amazon: 0, ebay: 0, magento: 0, purchase: 0, retail: 0, shop: 0, magentoSpecial: 0},
+        prices: {amazon: 0, ebay: 0, magento: 0, purchase: 0, retail: 0, shop: 0, magentoSpecial: 0, "onbuy v2": 0},
         title: "",
         till: {color: "#ffffff"},
         weight: 0

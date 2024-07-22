@@ -53,7 +53,7 @@ export const processOrders = async (data: LinnOrdersSQLResult[]) => {
                 },
                 price: Math.round(parseFloat(item.price) * 100),
                 profit: 0,
-                source: item.source.toLowerCase() as "amazon" | "ebay" | "magento" | "direct",
+                source: item.source.toLowerCase() as "amazon" | "ebay" | "magento" | "direct" | "onbuy v2",
             }
             arr.push(obj)
             i = arr.length - 1
@@ -113,7 +113,11 @@ function processSQLtoOrder(
     }
 }
 
-function getMarginProfit(channel:"amazon" | "ebay" | "magento" | "direct", marginData?:sbt.Item["marginData"]){
+function getMarginProfit(channel:"amazon" | "ebay" | "magento" | "direct" | "onbuy v2", marginData?:sbt.Item["marginData"]){
     if(channel === "direct" || !marginData) return 0
-    return marginData[channel].profit
+    if (marginData[channel]?.profit) {
+        return marginData[channel]?.profit
+    } else {
+        return 0
+    }
 }

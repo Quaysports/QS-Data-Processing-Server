@@ -8,7 +8,7 @@ export interface LinnOrdersSQLResult{
     postcode: string
     date: string
     id: string
-    source: "AMAZON" | "EBAY" | "MAGENTO" | "DIRECT"
+    source: "AMAZON" | "EBAY" | "MAGENTO" | "DIRECT" | "OnBuy v2"
     postalid: string
     extRef: string
     tracking: string
@@ -49,7 +49,7 @@ export interface OnlineOrder {
     profit: number;
     postageCost: number;
     region: string;
-    source: "AMAZON" | "EBAY" | "MAGENTO" | "DIRECT";
+    source: "AMAZON" | "EBAY" | "MAGENTO" | "DIRECT" | "OnBuy v2";
     totalWeight: number;
     town: string;
     tracking: string;
@@ -62,7 +62,7 @@ export interface NewOnlineOrder {
     date: string;
     price: number;
     profit: number;
-    source: "amazon" | "ebay" | "magento" | "direct";
+    source: "amazon" | "ebay" | "magento" | "direct" | "onbuy v2";
     customerDetails:CustomerDetails
     orderDetails:OrderDetails
     packaging: Packaging

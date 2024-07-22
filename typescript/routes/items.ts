@@ -6,65 +6,114 @@ import {
     uploadImages,
     getSKUListForStockLookup
 } from "../modules/routes/items";
-import * as express from 'express'
-import {postToWorker} from "../modules/worker/worker-factory";
+import * as express from 'express';
+import { postToWorker } from "../modules/worker/worker-factory";
 
-
-const itemsRoutes = express.Router()
+const itemsRoutes = express.Router();
 
 itemsRoutes.post('/StockLookup', async (req, res) => {
-    res.send(await getItemForStockLookup(req.body.query))
-})
+    try {
+        const result = await getItemForStockLookup(req.body.query);
+        res.send(result);
+    } catch (error) {
+        console.error('Error in StockLookup:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
 
 itemsRoutes.post('/StockLookupSKUList', async (req, res) => {
-    res.send(await getSKUListForStockLookup())
-})
+    try {
+        const result = await getSKUListForStockLookup();
+        res.send(result);
+    } catch (error) {
+        console.error('Error in StockLookupSKUList:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
+
 itemsRoutes.post('/GetItemImage', async (req, res) => {
-    res.set('Content-Type', 'text/plain')
-    res.send(await getMainItemImage(req.body.query))
-})
+    try {
+        res.set('Content-Type', 'text/plain');
+        const result = await getMainItemImage(req.body.query);
+        res.send(result);
+    } catch (error) {
+        console.error('Error in GetItemImage:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
+
 itemsRoutes.post('/GetBrandLabelImages', async (req, res) => {
-    const data = fs.readdirSync("./brand-label-images")
-    res.send(data || [])
-})
+    try {
+        const data = fs.readdirSync("./brand-label-images");
+        res.send(data || []);
+    } catch (error) {
+        console.error('Error in GetBrandLabelImages:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
 
 itemsRoutes.post('/UploadImages', async (req, res) => {
-    /*
-    * Req body obj: {_id:mongodb id, SKU:item.SKU, id:db image id, filename: index, image: image base64}
-     */
-    res.send(await uploadImages(req.body))
-})
+    try {
+        const result = await uploadImages(req.body);
+        res.send(result);
+    } catch (error) {
+        console.error('Error in UploadImages:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
 
 itemsRoutes.post('/UpdateAll', async (req, res) => {
-    await postToWorker("update",
-        {msg: "", reqId: "", type: "updateAll", data: {}, id: new Date().getTime().toString()}
-    )
-    res.send({status: 'done'})
-})
+    try {
+        await postToWorker("update",
+            { msg: "", reqId: "", type: "updateAll", data: {}, id: new Date().getTime().toString() }
+        );
+        res.send({ status: 'done' });
+    } catch (error) {
+        console.error('Error in UpdateAll:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
 
 itemsRoutes.post('/UpdateItemStock', async (req, res) => {
-    console.dir(req.body)
-    await postToWorker(
-        "update",
-        {msg: "", reqId: "", type: "stockTotal", data: {skus: req.body.skuList, save: true}, id: new Date().getTime().toString()}
-    )
-    res.send({status: 'done'})
-})
+    try {
+        console.dir(req.body);
+        await postToWorker(
+            "update",
+            { msg: "", reqId: "", type: "stockTotal", data: { skus: req.body.skuList, save: true }, id: new Date().getTime().toString() }
+        );
+        res.send({ status: 'done' });
+    } catch (error) {
+        console.error('Error in UpdateItemStock:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
 
 itemsRoutes.post('/UpdateLinnworksChannelPrices', async (req, res) => {
-    await postToWorker("update",
-        {
-            type: "updateLinnChannelPrices",
-            msg: "",
-            reqId: "",
-            data: {items: req.body.items},
-            id: new Date().getTime().toString()
-        }
-    )
-    res.send({status: 'done'})
-})
-itemsRoutes.post('/DeleteImage', async (req, res) => {
-    res.send(await deleteImage(req.body.id, req.body.item))
-})
+    try {
+        await postToWorker("update",
+            {
+                type: "updateLinnChannelPrices",
+                msg: "",
+                reqId: "",
+                data: { items: req.body.items },
+                id: new Date().getTime().toString()
+            }
+        );
+        res.send({ status: 'done' });
+    } catch (error) {
+        console.error('Error in UpdateLinnworksChannelPrices:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
 
-export default itemsRoutes
+itemsRoutes.post('/DeleteImage', async (req, res) => {
+    try {
+        const result = await deleteImage(req.body.id, req.body.item);
+        res.send(result);
+    } catch (error) {
+        console.error('Error in DeleteImage:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
+
+export default itemsRoutes;

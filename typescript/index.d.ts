@@ -43,7 +43,8 @@ declare namespace sbt {
             magento:number
             //used to be SHOPPRICEINCVAT
             shop:number
-            magentoSpecial: number
+            magentoSpecial: number,
+            "onbuy v2": number
         }
         discounts:{
             shop:number
@@ -62,7 +63,8 @@ declare namespace sbt {
             shop: {
                 status: number,
                 price: number
-            }
+            },
+            "onbuy v2": ChannelPriceData
         }
         //still used?
         stock: {
@@ -86,6 +88,7 @@ declare namespace sbt {
             amazon:AmazonMarginData
             ebay:ChannelMarginData
             magento:ChannelMarginData
+            "onbuy v2": ChannelMarginData
             shop:ChannelMarginData
             packaging: number
             postage: number

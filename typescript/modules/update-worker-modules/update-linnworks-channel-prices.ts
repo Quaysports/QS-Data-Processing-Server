@@ -29,6 +29,11 @@ export default async function UpdateLinnworksChannelPrices(
         "New-Items",
         generateAggregationQuery("magento", argSkuList)
     )
+    let onbuyQuery = await findAggregate<QueryResult>(
+        "New-Items",
+        generateAggregationQuery("onbuy v2", argSkuList)
+    )
+    
     // updates extendedProprties for Magento Special Price
     let extendedPropertiesMagentoSpecialQuery = await findAggregate<SpecialPriceQueryResult>(
         "New-Items",
@@ -61,6 +66,12 @@ export default async function UpdateLinnworksChannelPrices(
         for (let itemResult of magentoQuery) {
             skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
             addPriceToUpdateMap(updates, 'MAGENTO', 'http://quaysports.com', itemResult.price, itemResult.linnId, itemResult.channelId)
+        }
+    }
+    if (onbuyQuery && onbuyQuery.length > 0) {
+        for (let itemResult of onbuyQuery) {
+            skuList = skuList === '' ? `'${itemResult.SKU}'` : skuList + `,'${itemResult.SKU}'`
+            addPriceToUpdateMap(updates, 'OnBuy v2', 'onbuy', itemResult.price, itemResult.linnId, itemResult.channelId)
         }
     }
     if (extendedPropertiesMagentoSpecialQuery && extendedPropertiesMagentoSpecialQuery.length > 0 && extendedPropertiesMagentoSpecialQuery[0].magentoSpecialPrice !== 0) {
@@ -157,7 +168,7 @@ interface SpecialPriceQueryResult {
     expropSpecialPrice: number
 }
 
-function generateAggregationQuery(channel: "amazon" | "ebay" | "magento" | "magentoSpecial", skus?: string[]) {
+function generateAggregationQuery(channel: "amazon" | "ebay" | "magento" | "magentoSpecial" | "onbuy v2", skus?: string[]) {
     let query = [
         {
             '$match': {

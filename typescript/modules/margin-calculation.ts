@@ -7,6 +7,7 @@ export default async function ProcessMargins(item: sbt.Item, Fees: FeesClass, Pa
         amazon: {fees: 0, primePostage: 0, primeProfit: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
         ebay: {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
         magento: {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
+        "onbuy v2": {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
         packaging: 0,
         postage: 0,
         shop: {fees: 0, profit: 0, profitLastYear: 0, salesVAT: 0},
@@ -17,6 +18,7 @@ export default async function ProcessMargins(item: sbt.Item, Fees: FeesClass, Pa
     await getAmazonListingCosts(item, Fees);
     await getMagentoListingCosts(item, Fees);
     await getEbayListingCosts(item, Fees);
+    await getOnbuyListingCosts(item, Fees);
     await getShopListingCosts(item, Fees);
     if(!item.test) await getLastYearChannelProfits(item);
     return
@@ -171,6 +173,30 @@ const getMagentoListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
                 item.marginData.magento.salesVAT
             )
 
+        return
+    }
+}
+
+const getOnbuyListingCosts = async (item: sbt.Item, Fees: FeesClass) => {
+
+    if (!item.prices["onbuy v2"]) item.prices.ebay ? item.prices["onbuy v2"] = item.prices.ebay : 0;
+    if (item.channelPrices["onbuy v2"]) {
+        item.channelPrices["onbuy v2"].updateRequired = item.channelPrices?.["onbuy v2"]?.price !== item.prices?.["onbuy v2"]
+    } 
+
+    if (!item.prices["onbuy v2"]) {
+        item.marginData["onbuy v2"].profit = 0;
+        return
+    } else {
+        item.marginData["onbuy v2"].fees = Fees.calc('onbuy', item.prices["onbuy v2"])
+        item.marginData["onbuy v2"].salesVAT = item.prices["onbuy v2"] - (item.prices["onbuy v2"] / Fees.VAT());
+        item.marginData["onbuy v2"].profit = item.prices["onbuy v2"] - (
+            item.prices.purchase +
+            item.marginData.postage +
+            item.marginData.packaging +
+            item.marginData["onbuy v2"].fees +
+            item.marginData["onbuy v2"].salesVAT
+        )
         return
     }
 }

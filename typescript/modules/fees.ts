@@ -14,14 +14,16 @@ interface Channels {
     shop: number;
     magento: number;
     ebay: number;
-    amazon: number
+    amazon: number;
+    onbuy: number
 }
 
 interface VatApplicable {
     shop: boolean;
     magento: boolean;
     ebay: boolean;
-    amazon: boolean
+    amazon: boolean;
+    onbuy: boolean;
 }
 
 export const get = async () => {
@@ -48,7 +50,7 @@ export const update = async (data: FeesData) => {
 export interface FeesClass {
 
     initialize: () => Promise<void>;
-    calc(id: "amazon" | "ebay" | "magento" | "shop", price: number): number;
+    calc(id: "amazon" | "ebay" | "magento" | "onbuy" | "shop", price: number): number;
 
     VAT(): number;
 }
@@ -71,7 +73,7 @@ export class Fees implements FeesClass {
 
     private fd: FeesData | undefined;
 
-    calc(id: "amazon" | "ebay" | "magento" | "shop", price: number) {
+    calc(id: "amazon" | "ebay" | "magento" | "onbuy" | "shop", price: number) {
         if (!this.fd) return 0
         let per = this.fd.listing[id] > 0 ? price * (this.fd.listing[id] / 100) / 100 : 0;
         let flat = this.fd.flat[id]

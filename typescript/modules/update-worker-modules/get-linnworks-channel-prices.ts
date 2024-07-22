@@ -5,7 +5,7 @@ import {getItemsFromDB} from "./update-items";
 export interface ListingDescriptionsSQLQuery {
     ItemNumber: string,
     linnId: string,
-    Source:"amazon" | "ebay" | "magento",
+    Source:"amazon" | "ebay" | "magento" | "onbuy",
     SubSource:string,
     Price:string,
     UpdateStatus:string,
@@ -106,6 +106,7 @@ export default async function GetLinnworksChannelPrices(
             },
             ebay: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
             magento: {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
+            "onbuy v2": {id: "", price: 0, status: 0, subSource: "", updateRequired: false, updated: ""},
             shop: {price: 0, status: 0}
         }
 
