@@ -131,7 +131,7 @@ export const linnGet = async () => {
                 o.cFullName AS 'name', 
                 o.cEmailAddress AS 'email', 
                 o.cPostCode AS 'postcode', 
-                o.dProcessedOn AS 'date', 
+                o.dReceievedDate AS 'date',
                 o.nOrderId AS 'id', 
                 o.Source AS 'source', 
                 o.fkPostalServiceId AS 'postalid', 
