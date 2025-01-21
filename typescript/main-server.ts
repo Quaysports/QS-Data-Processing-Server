@@ -31,8 +31,14 @@ const startSever = async () => {
     app.use("/brand-label-images", express.static(path.join(__dirname, "../brand-label-images")));
 
     const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000", "141.195.190.47"];
+    const temporaryAccess = true
     app.use((req, res, next) => {
-        allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
+        // allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
+        if (temporaryAccess || allowed.includes(req.headers.host || "")) {
+            next()
+        } else {
+            res.status(403).send("Forbidden")
+        }
     })
 
     //CORS filtering
