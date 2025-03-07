@@ -22,15 +22,6 @@ http.createServer(app).listen(4000, async () => {
 const startSever = async () => {
     console.log("Server starting")
     console.log(process.env.DBNAME)
-
-    // Log incoming requests (Method, URL, Headers, Body)
-    app.use((req, res, next) => {
-        console.log(`Received ${req.method} request for ${req.url}`);
-        console.log("Request Headers:", req.headers);
-        console.log("Request Body:", req.body);
-        next();
-    });
-
     // express text parser maximums (to allow handling of large JSON text strings)
     app.use(express.json({limit: '5mb'}));
     app.use(express.urlencoded({limit: '5mb', extended: true}));
@@ -39,17 +30,10 @@ const startSever = async () => {
     app.use("/images", express.static(path.join(__dirname, "../images")));
     app.use("/brand-label-images", express.static(path.join(__dirname, "../brand-label-images")));
 
-    const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000", "quaysports.duckdns.org", "94.196.96.215"];
+    const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000", "quaysports.duckdns.org"];
     app.use((req, res, next) => {
         allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
     })
-    app.use((req, res, next) => {
-        console.log("host: ", req.headers.host)
-        console.log("origin: ", req.headers.origin)
-        console.log("token received: ", req.headers.token);
-        console.log("expected token: ", process.env.TOKEN);
-        next()
-    });
 
     //CORS filtering
     app.use(function (req, res, next) {
