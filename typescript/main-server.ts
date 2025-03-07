@@ -39,17 +39,16 @@ const startSever = async () => {
     app.use("/images", express.static(path.join(__dirname, "../images")));
     app.use("/brand-label-images", express.static(path.join(__dirname, "../brand-label-images")));
 
-    // const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000", "quaysports.duckdns.org"];
-    // app.use((req, res, next) => {
-    //     allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
-    // })
+    const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000", "quaysports.duckdns.org", "94.196.96.215"];
+    app.use((req, res, next) => {
+        allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
+    })
     app.use((req, res, next) => {
         console.log("host: ", req.headers.host)
         console.log("origin: ", req.headers.origin)
         console.log("token received: ", req.headers.token);
         console.log("expected token: ", process.env.TOKEN);
-        let token = req.headers.token?.toString() as "" | undefined;
-        token && token === process.env.TOKEN ? next() : res.sendStatus(403);
+        next()
     });
 
     //CORS filtering
