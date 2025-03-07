@@ -22,6 +22,15 @@ http.createServer(app).listen(4000, async () => {
 const startSever = async () => {
     console.log("Server starting")
     console.log(process.env.DBNAME)
+
+    // Log incoming requests (Method, URL, Headers, Body)
+    app.use((req, res, next) => {
+        console.log(`Received ${req.method} request for ${req.url}`);
+        console.log("Request Headers:", req.headers);
+        console.log("Request Body:", req.body);
+        next();
+    });
+
     // express text parser maximums (to allow handling of large JSON text strings)
     app.use(express.json({limit: '5mb'}));
     app.use(express.urlencoded({limit: '5mb', extended: true}));
@@ -36,6 +45,9 @@ const startSever = async () => {
     // })
     app.use((req, res, next) => {
         console.log("host: ", req.headers.host)
+        console.log("origin: ", req.headers.origin)
+        console.log("token received: ", req.headers.token);
+        console.log("expected token: ", process.env.TOKEN);
         let token = req.headers.token?.toString() as "" | undefined;
         token && token === process.env.TOKEN ? next() : res.sendStatus(403);
     });
