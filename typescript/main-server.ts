@@ -32,7 +32,23 @@ const startSever = async () => {
 
     const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000", "quaysports.duckdns.org"];
     app.use((req, res, next) => {
-        allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
+        // allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
+        console.log("NODE_ENV:", process.env.NODE_ENV);
+        console.log("Current allowed hosts:", allowed);
+        if (allowed.includes(req.headers.host || "")) {
+            next();
+        } else {
+            console.log("Rejected request:", {
+                host: req.headers.host,
+                url: req.url,
+                method: req.method,
+                ip: req.ip,
+                originalUrl: req.originalUrl,
+                remoteAddress: req.connection.remoteAddress,
+                headers: req.headers
+            });
+            res.status(403).send("Forbidden");
+        }
     })
 
     //CORS filtering
