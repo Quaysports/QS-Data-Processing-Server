@@ -22,6 +22,17 @@ http.createServer(app).listen(4000, async () => {
 const startSever = async () => {
     console.log("Server starting")
     console.log(process.env.DBNAME)
+    // Add this before any other middleware
+    app.use((req, res, next) => {
+        console.log("Incoming request:", {
+            timestamp: new Date().toISOString(),
+            host: req.headers.host,
+            url: req.url,
+            method: req.method,
+            ip: req.ip
+        });
+        next();
+    });
     // express text parser maximums (to allow handling of large JSON text strings)
     app.use(express.json({limit: '5mb'}));
     app.use(express.urlencoded({limit: '5mb', extended: true}));
@@ -61,9 +72,23 @@ const startSever = async () => {
         next();
     });
 
+    // app.use((req, res, next) => {
+    //     let token = req.headers.token?.toString() as "" | undefined
+    //     token && token === process.env.TOKEN ? next() : res.sendStatus(403)
+    // })
     app.use((req, res, next) => {
         let token = req.headers.token?.toString() as "" | undefined
-        token && token === process.env.TOKEN ? next() : res.sendStatus(403)
+        if (token && token === process.env.TOKEN) {
+            next();
+        } else {
+            console.log("Token authentication failed:", {
+                token: token,
+                url: req.url,
+                method: req.method,
+                host: req.headers.host
+            });
+            res.sendStatus(403);
+        }
     })
 
     console.log("Mongo Ping: ", await ping())
