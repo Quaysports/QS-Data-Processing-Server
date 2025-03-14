@@ -41,12 +41,13 @@ const startSever = async () => {
     app.use("/images", express.static(path.join(__dirname, "../images")));
     app.use("/brand-label-images", express.static(path.join(__dirname, "../brand-label-images")));
 
-    const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000", "quaysports.duckdns.org"];
+    const allowed = ["192.168.1.200:4000", "192.168.1.120:4000", "localhost:4000", "127.0.0.1:4000", "quaysports.duckdns.org", "92.207.0.213"];
     app.use((req, res, next) => {
         // allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
         console.log("NODE_ENV:", process.env.NODE_ENV);
         console.log("Current allowed hosts:", allowed);
         if (allowed.includes(req.headers.host || "")) {
+            console.log("Host allowed:", req.headers.host);
             next();
         } else {
             console.log("Rejected request:", {
