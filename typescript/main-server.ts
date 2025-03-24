@@ -46,7 +46,7 @@ const startSever = async () => {
         // allowed.includes(req.headers.host || "") ? next() : res.status(403).send("Forbidden")
         console.log("NODE_ENV:", process.env.NODE_ENV);
         console.log("Current allowed hosts:", allowed);
-        if (allowed.includes(req.headers.host || "")) {
+        if (allowed.includes(req.headers.host || "") || req.headers.host?.includes("192.168.137.")) { // Packing PC hotspot IP
             console.log("Host allowed:", req.headers.host);
             next();
         } else {
