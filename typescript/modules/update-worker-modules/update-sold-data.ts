@@ -48,7 +48,8 @@ export default async function UpdateSoldData(merge: Map<string, sbt.Item>, skus?
         Qty: string
     }
 
-    const linnData = (await getLinnQuery<SQLQuery>(queryString(yearString))).Results
+    const response = await getLinnQuery<SQLQuery>(queryString(yearString));
+    const linnData = response.Results || []
 
     if (linnData.length > 0) {
         for (let item of linnData) {
