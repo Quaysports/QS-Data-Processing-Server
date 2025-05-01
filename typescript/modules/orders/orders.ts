@@ -118,6 +118,11 @@ export const init = async () => {
     setInterval(() => { linnGet() }, 300000)
 }
 
+function getOrderCount(orders: LinnOrdersSQLResult[]): number {
+    const uniqueOrders = new Set(orders.map(order => order.id))
+    return uniqueOrders.size
+}
+
 export const linnGet = async () => {
     let queryDate = await findOne<any>("Server", {id: "Orders"})
 
@@ -166,7 +171,7 @@ export const linnGet = async () => {
     )
 
     let data = qResult.Results
-    if (data) console.log("New orders found: " + data.length)
+    if (data) console.log(`New orders found: ${getOrderCount(data)}`)
     let currentDate = new Date()
     await setData("Server", {id: "Orders"}, {lastUpdate: toSqlDate < currentDate ? toSqlDate : currentDate})
 
