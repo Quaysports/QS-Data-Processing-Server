@@ -231,6 +231,7 @@ declare namespace sbt {
         url: string
         filename: string;
         link: string;
+        publicFilename?: string;
     }
     interface ChannelData {
         year: number;
