@@ -172,10 +172,11 @@ export const linnGet = async () => {
 
     let data = qResult.Results
     if (data) console.log(`New orders found: ${getOrderCount(data)}`)
+    
+    if (data && data.length > 0) await processOrders(data)
+
     let currentDate = new Date()
     await setData("Server", {id: "Orders"}, {lastUpdate: toSqlDate < currentDate ? toSqlDate : currentDate})
-
-    if (data && data.length > 0) await processOrders(data)
 
     return
 }
