@@ -124,12 +124,14 @@ function getOrderCount(orders: LinnOrdersSQLResult[]): number {
 }
 
 export const linnGet = async () => {
+    const LOOKBACK_MS = 10 * 60 * 1000; // 10 minutes
+    
     let queryDate = await findOne<any>("Server", {id: "Orders"})
-
     let sqlDate = new Date(queryDate.lastUpdate)
+    let adjustedSqlDate = new Date(sqlDate.getTime() - LOOKBACK_MS)
     let toSqlDate = new Date(sqlDate.getTime() + 15778800000)
     let toSqlDateString = toSqlDate.toISOString().slice(0, 19).toString().replace('T', ' ')
-    let sqlDateString = sqlDate.toISOString().slice(0, 19).toString().replace('T', ' ')
+    let sqlDateString = adjustedSqlDate.toISOString().slice(0, 19).toString().replace('T', ' ')
 
     let qResult = await getLinnQuery<LinnOrdersSQLResult>(
         `SELECT 
