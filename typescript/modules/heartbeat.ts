@@ -39,11 +39,20 @@ const checkForItemUpdates = async (current: mostRecentUpdate) => {
 
     const linnQuery = await getLinnQuery<SQLQueryResult>(
         `SELECT ItemNumber AS 'SKU',
-                ModifiedDate AS 'date'
+                ModifiedDate AS 'date',
+        pkStockItemID
          FROM StockItem
          WHERE bLogicalDelete = 0
            AND ModifiedDate > '${current.recentUpdates.date}'
-         ORDER BY ModifiedDate DESC`
+        UNION
+        SELECT ItemNumber AS 'SKU',
+               ModifiedDate AS 'date',
+        pkStockItemID
+         FROM StockItem
+         WHERE bLogicalDelete = 0
+        AND pkStockItemID in (SELECT pkStockItemId from Stock_ItemComposition where pkLinkStockItemId in (select pkStockItemID from StockItem WHERE bLogicalDelete = 0
+           AND ModifiedDate > '${current.recentUpdates.date}'))        
+        ORDER BY ModifiedDate DESC`
     )
 
     const UpdateItems = linnQuery.Results;
